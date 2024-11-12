@@ -3,6 +3,8 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+using PokaiLand.Events;
+
 namespace PokaiLand.Player
 {
     using static InputKeys;
@@ -20,11 +22,12 @@ namespace PokaiLand.Player
         [Header("References")]
         [SerializeField] private InputActionAsset inputAsset;
         
+        private bool _prevIsGrounded;
         private Rigidbody2D _rb;
         private Collider2D _collider;
         private InputAction _moveAction;
 
-        private Vector2 Movement => _moveAction.ReadValue<Vector2>();
+        private Vector2 MovementInput => _moveAction.ReadValue<Vector2>();
 
         public override void OnNetworkSpawn()
         {
@@ -52,17 +55,30 @@ namespace PokaiLand.Player
             inputAsset.FindActionMap(PlayerMap).Disable();
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
-            if (Movement != Vector2.zero)
+            bool isGrounded = IsGrounded();
+
+            if (!_prevIsGrounded && isGrounded)
+                EventBus.Execute(new PlayerLandedEvent());
+            
+            _prevIsGrounded = isGrounded;
+            
+            if (MovementInput != Vector2.zero)
             {
-                if (IsGrounded())
-                    _rb.linearVelocityX = Movement.x * moveSpeed;
+                if (isGrounded)
+                    _rb.linearVelocityX = MovementInput.x * moveSpeed;
                 else
-                    _rb.linearVelocityX = Movement.x * moveSpeed * airMoveThreshold;
+                    _rb.linearVelocityX = MovementInput.x * moveSpeed * airMoveThreshold;
+                
+                transform.eulerAngles = new Vector3(0, _rb.linearVelocityX > 0 ? 180 : 0, 0);
+                EventBus.Execute(new PlayerMovementEvent(_rb.linearVelocityX));
             }
             else
             {
+                if (_rb.linearVelocityX != 0)
+                    EventBus.Execute(new PlayerMovementEvent(0));
+                
                 _rb.linearVelocityX = 0;
             }
         }
@@ -70,7 +86,10 @@ namespace PokaiLand.Player
         private void OnJump(InputAction.CallbackContext ctx)
         {
             if (IsGrounded())
+            {
                 _rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                EventBus.Execute(new PlayerJumpEvent());
+            }
         }
 
         private bool IsGrounded()

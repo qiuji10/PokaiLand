@@ -119,7 +119,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CharacterRun_0
+      name: SS_CharacterRun_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,7 +141,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CharacterRun_1
+      name: SS_CharacterRun_1
       rect:
         serializedVersion: 2
         x: 32
@@ -163,7 +163,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CharacterRun_2
+      name: SS_CharacterRun_2
       rect:
         serializedVersion: 2
         x: 64
@@ -198,9 +198,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CharacterRun_0: -93376632
-      CharacterRun_1: -279263332
-      CharacterRun_2: -1446100852
+      SS_CharacterRun_0: -93376632
+      SS_CharacterRun_1: -279263332
+      SS_CharacterRun_2: -1446100852
       Walk_: -93376632
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
