@@ -7,7 +7,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ACLIP_Player_Idle
+  m_Name: ANIM_Player_Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -40,7 +40,7 @@ AnimatorStateMachine:
     m_Position: {x: 70, y: 320, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7355213933494903263}
-    m_Position: {x: 72.3114, y: 261.40555, z: 0}
+    m_Position: {x: 70, y: 260, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -80,7 +80,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ACLIP_Player_Walk
+  m_Name: ANIM_Player_Walk
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []

@@ -16,8 +16,8 @@ namespace PokaiLand.Player
         public NetworkVariable<FixedString32Bytes> playerName = new();
 
         private bool _isGrounded;
-        private int ACLIP_Player_Walk = Animator.StringToHash("ACLIP_Player_Walk");
-        private int ACLIP_Player_Idle = Animator.StringToHash("ACLIP_Player_Idle");
+        private readonly int ANIM_Player_Walk = Animator.StringToHash("ANIM_Player_Walk");
+        private readonly int ANIM_Player_Idle = Animator.StringToHash("ANIM_Player_Idle");
         
         public override void OnNetworkSpawn()
         {
@@ -49,14 +49,14 @@ namespace PokaiLand.Player
             
             if (!_isGrounded)
             {
-                anim.Play(ACLIP_Player_Idle);
+                anim.Play(ANIM_Player_Idle);
                 return;
             }
             
             if (e.horizontalVelocity != 0)
-                anim.Play(ACLIP_Player_Walk);
+                anim.Play(ANIM_Player_Walk);
             else
-                anim.Play(ACLIP_Player_Idle);
+                anim.Play(ANIM_Player_Idle);
         }
         
         private void OnPlayerJump(PlayerJumpEvent obj)
