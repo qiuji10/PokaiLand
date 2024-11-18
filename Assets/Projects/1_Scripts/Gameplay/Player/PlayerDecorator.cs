@@ -1,7 +1,9 @@
 using System;
-using PokaiLand.Events;
 using Unity.Netcode;
 using UnityEngine;
+
+using PokaiLand.Events;
+using Unity.Collections;
 
 namespace PokaiLand.Player
 {
@@ -11,6 +13,7 @@ namespace PokaiLand.Player
         [SerializeField] private Animator anim;
         
         public NetworkVariable<Color> playerColor = new();
+        public NetworkVariable<FixedString32Bytes> playerName = new();
 
         private bool _isGrounded;
         private int ACLIP_Player_Walk = Animator.StringToHash("ACLIP_Player_Walk");
@@ -19,16 +22,21 @@ namespace PokaiLand.Player
         public override void OnNetworkSpawn()
         {
             if (!IsOwner)
+            {
+                gameObject.name = playerName.Value.Value;
                 spriteRenderer.color = playerColor.Value;
-            
+            }
+
+            playerName.OnValueChanged += OnPlayerNameChanged;
             playerColor.OnValueChanged += OnPlayerColorChanged;
             EventBus.Register<PlayerMovementEvent>(OnPlayerMovement);
             EventBus.Register<PlayerJumpEvent>(OnPlayerJump);
             EventBus.Register<PlayerLandedEvent>(OnPlayerLanded);
         }
-        
+
         public override void OnNetworkDespawn()
         {
+            playerName.OnValueChanged += OnPlayerNameChanged;
             playerColor.OnValueChanged -= OnPlayerColorChanged;
             EventBus.Deregister<PlayerMovementEvent>(OnPlayerMovement);
             EventBus.Deregister<PlayerJumpEvent>(OnPlayerJump);
@@ -37,6 +45,8 @@ namespace PokaiLand.Player
 
         private void OnPlayerMovement(PlayerMovementEvent e)
         {
+            if (!IsOwner) return; 
+            
             if (!_isGrounded)
             {
                 anim.Play(ACLIP_Player_Idle);
@@ -59,9 +69,14 @@ namespace PokaiLand.Player
             _isGrounded = true;
         }
 
-        private void OnPlayerColorChanged(Color previousvalue, Color newvalue)
+        private void OnPlayerNameChanged(FixedString32Bytes previousValue, FixedString32Bytes newValue)
         {
-            spriteRenderer.color = newvalue;
+            gameObject.name = newValue.Value;
+        }
+        
+        private void OnPlayerColorChanged(Color previousValue, Color newValue)
+        {
+            spriteRenderer.color = newValue;
         }
     }
 }
