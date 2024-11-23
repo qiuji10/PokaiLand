@@ -56,7 +56,7 @@ namespace PokaiLand.Player
             _playerControls.Player.Jump.performed -= OnJump;
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (!IsOwner) return; 
             

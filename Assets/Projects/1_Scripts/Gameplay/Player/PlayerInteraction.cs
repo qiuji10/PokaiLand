@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using PokaiLand.Player.PokaiLand.Utilities;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -7,15 +8,29 @@ using UnityEngine.InputSystem;
 namespace PokaiLand.Player
 {
     using Input;
-    
+
     public class PlayerInteraction : NetworkBehaviour
     {
-        private IPickable _pickable;
         private PlayerControls _playerControls;
+        private IPickable _currentHoldingPickable;
+        private CollisionHandler<IPickable> _pickableHandler;
+        private CollisionHandler<IInteractable> _interactableHandler;
 
         private void Awake()
         {
             _playerControls = new PlayerControls();
+            
+            _pickableHandler = new CollisionHandler<IPickable>(
+                transform,
+                pickable => ((MonoBehaviour)pickable).transform.position,
+                pickable => !pickable.IsPickedUp
+            );
+
+            _interactableHandler = new CollisionHandler<IInteractable>(
+                transform,
+                interactable => ((MonoBehaviour)interactable).transform.position,
+                interactable => true // Add conditions for valid interactables if needed
+            );
         }
 
         public override void OnNetworkSpawn()
@@ -27,46 +42,49 @@ namespace PokaiLand.Player
         private void OnEnable()
         {
             if (_playerControls == null) return;
-            
+
             _playerControls.Enable();
-            _playerControls.Player.Pick.performed += OnPlayerPickAttempt;
+            _playerControls.Player.Interact.performed += OnPlayerPickAttempt;
         }
 
         private void OnDisable()
         {
             if (_playerControls == null) return;
-            
-            _playerControls.Player.Pick.performed -= OnPlayerPickAttempt;
+
+            _playerControls.Player.Interact.performed -= OnPlayerPickAttempt;
             _playerControls.Disable();
         }
-        
+
         private void OnPlayerPickAttempt(InputAction.CallbackContext ctx)
         {
-            if (_pickable != null)
+            if (_currentHoldingPickable != null && _currentHoldingPickable.CanDrop)
             {
-                if (!_pickable.IsPickedUp)
-                    _pickable.OnPick(NetworkObject.NetworkObjectId);
-                else
-                    _pickable.OnDrop();
+                _currentHoldingPickable.OnDrop();
+                _currentHoldingPickable = null;
+                return;
+            }
+            
+            if (_pickableHandler.CurrentTarget == null) return;
+            
+            var pickable = _pickableHandler.CurrentTarget;
+            
+            if (!pickable.IsPickedUp)
+            {
+                _currentHoldingPickable = pickable;
+                pickable.OnPick(NetworkObject.NetworkObjectId);
             }
         }
         
-        void OnTriggerEnter2D(Collider2D col)
+        private void OnTriggerEnter2D(Collider2D col)
         {
-            if (_pickable == null && col.TryGetComponent(out IPickable pickable) && !pickable.IsPickedUp)
-            {
-                Debug.Log($"{gameObject.name} entered pickable");
-                _pickable = pickable;
-            }
+            _pickableHandler.OnTriggerEnter(col);
+            _interactableHandler.OnTriggerEnter(col);
         }
 
         private void OnTriggerExit2D(Collider2D col)
         {
-            if (_pickable != null && !_pickable.IsPickedUp && col.TryGetComponent(out IPickable pickable) && _pickable == pickable)
-            {
-                Debug.Log($"{gameObject.name} exited pickable");
-                _pickable = null;
-            }
+            _pickableHandler.OnTriggerExit(col);
+            _interactableHandler.OnTriggerExit(col);
         }
     }
 }

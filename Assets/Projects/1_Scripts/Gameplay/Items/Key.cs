@@ -1,4 +1,4 @@
-using NUnit.Framework.Constraints;
+using PokaiLand.Enum;
 using PokaiLand.Input;
 using Unity.Netcode;
 using UnityEngine;
@@ -6,15 +6,18 @@ using UnityEngine.InputSystem;
 
 namespace PokaiLand.Item
 {
-    public class ItemKey : NetworkBehaviour, IPickable
+    public class Key : NetworkBehaviour, IPickable, IInteractable
     {
-        private readonly NetworkVariable<bool> _isPickedUp = new();
-        private readonly NetworkVariable<ulong> _holderClientId = new();
+        [SerializeField] private bool canDrop;
 
         public bool IsPickedUp => _isPickedUp.Value;
+        public bool CanDrop => canDrop;
         public ulong HolderClientId => _holderClientId.Value;
-
-        public InputAction PickAction => new PlayerControls().Player.Pick;
+        public EInteractable Type => EInteractable.Key;
+        public InputAction InputAction => new PlayerControls().Player.Interact;
+        
+        private readonly NetworkVariable<bool> _isPickedUp = new();
+        private readonly NetworkVariable<ulong> _holderClientId = new();
         
         public void OnPick(ulong pickerClientId)
         {
@@ -32,6 +35,8 @@ namespace PokaiLand.Item
 
         public void OnDrop()
         {
+            if (!canDrop) return;
+            
             OnDropServerRpc();
         }
         
