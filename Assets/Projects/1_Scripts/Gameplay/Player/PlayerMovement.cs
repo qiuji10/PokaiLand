@@ -32,7 +32,8 @@ namespace PokaiLand.Player
         {
             if (!IsOwner)
             {
-                gameObject.layer = LayerMask.NameToLayer("Default") != -1 ? LayerMask.NameToLayer("Default") : 0;
+                // To make other player as jump-able ground 
+                gameObject.layer = LayerMask.NameToLayer("Ground") != -1 ? LayerMask.NameToLayer("Ground") : 0;
             }
         }
 
@@ -64,7 +65,7 @@ namespace PokaiLand.Player
 
             if (!_prevIsGrounded && isGrounded)
             {
-                velocity.y = 0f;
+                velocity.y = 0f; // If remove this, then player will bounce when interact with RigidBody2D
                 EventBus.Execute(new PlayerLandedEvent());
             }
 
@@ -99,7 +100,6 @@ namespace PokaiLand.Player
 
         private bool IsGrounded()
         {
-            // Perform the ground check using a rectangle
             var overlapCollider = Physics2D.OverlapBox(
                 (Vector2)transform.position + groundCheckOffset,
                 groundCheckBoxSize,
@@ -107,8 +107,9 @@ namespace PokaiLand.Player
                 groundLayer
             );
 
-            return overlapCollider && overlapCollider.gameObject != gameObject;
+            return overlapCollider && !overlapCollider.isTrigger && overlapCollider.gameObject != gameObject;
         }
+
 
         private void OnDrawGizmos()
         {
