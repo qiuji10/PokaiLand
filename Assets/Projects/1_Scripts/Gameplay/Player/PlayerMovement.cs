@@ -5,12 +5,11 @@ using UnityEngine.InputSystem;
 
 using PokaiLand.Events;
 
-
 namespace PokaiLand.Player
 {
     using static InputKeys;
     using Input;
-    
+
     public class PlayerMovement : NetworkBehaviour
     {
         [Header("Configuration")]
@@ -18,14 +17,14 @@ namespace PokaiLand.Player
         [SerializeField] private float airMoveThreshold = 0.2f;
         [SerializeField] private float jumpForce = 10f;
         [SerializeField] private LayerMask groundLayer;
-        [SerializeField] private Vector2 groundCheckOffset = new Vector2(0f, -0.5f); // Offset for ground check
-        [SerializeField] private float groundCheckRadius = 0.1f; 
-        
+        [SerializeField] private Vector2 groundCheckOffset = new Vector2(0f, -0.5f);
+        [SerializeField] private Vector2 groundCheckBoxSize = new Vector2(1f,  0.1f);
+
         private bool _prevIsGrounded;
         private Rigidbody2D _rb;
-        private Collider2D _collider;
         private InputAction _moveAction;
         private PlayerControls _playerControls;
+        private float _lastReportedVelocityX;
 
         private Vector2 MovementInput => _moveAction.ReadValue<Vector2>();
 
@@ -33,7 +32,7 @@ namespace PokaiLand.Player
         {
             if (!IsOwner)
             {
-                gameObject.layer = LayerMask.NameToLayer("Default");
+                gameObject.layer = LayerMask.NameToLayer("Default") != -1 ? LayerMask.NameToLayer("Default") : 0;
             }
         }
 
@@ -58,57 +57,63 @@ namespace PokaiLand.Player
 
         private void FixedUpdate()
         {
-            if (!IsOwner) return; 
-            
+            if (!IsOwner) return;
+
             bool isGrounded = IsGrounded();
+            Vector2 velocity = _rb.linearVelocity;
 
             if (!_prevIsGrounded && isGrounded)
+            {
+                velocity.y = 0f;
                 EventBus.Execute(new PlayerLandedEvent());
-            
+            }
+
             _prevIsGrounded = isGrounded;
 
-            if (MovementInput != Vector2.zero)
+            // Handle movement
+            velocity.x = MovementInput.x * moveSpeed * (isGrounded ? 1 : airMoveThreshold);
+            _rb.linearVelocity = velocity;
+
+            // Flip sprite
+            if (Mathf.Abs(MovementInput.x) > 0.1f)
             {
-                if (isGrounded)
-                    _rb.linearVelocityX = MovementInput.x * moveSpeed;
-                else
-                    _rb.linearVelocityX = MovementInput.x * moveSpeed * airMoveThreshold;
-                
-                transform.eulerAngles = new Vector3(0, _rb.linearVelocityX > 0 ? 180 : 0, 0);
-                EventBus.Execute(new PlayerMovementEvent(_rb.linearVelocityX));
+                Vector3 scale = transform.localScale;
+                scale.x = MovementInput.x > 0 ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
+                transform.localScale = scale;
             }
-            else
+
+            // Report movement changes
+            if (Mathf.Abs(velocity.x - _lastReportedVelocityX) > Mathf.Epsilon)
             {
-                //if (_rb.linearVelocityX != 0)
-                    
-                EventBus.Execute(new PlayerMovementEvent(0));
-                _rb.linearVelocityX = 0;
+                EventBus.Execute(new PlayerMovementEvent(velocity.x));
+                _lastReportedVelocityX = velocity.x;
             }
         }
 
         private void OnJump(InputAction.CallbackContext ctx)
         {
             if (!IsGrounded()) return;
-            _rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, jumpForce);
             EventBus.Execute(new PlayerJumpEvent());
         }
 
         private bool IsGrounded()
         {
-            var overlapCollider = Physics2D.OverlapCircle((Vector2)transform.position + groundCheckOffset, groundCheckRadius, groundLayer);
+            // Perform the ground check using a rectangle
+            var overlapCollider = Physics2D.OverlapBox(
+                (Vector2)transform.position + groundCheckOffset,
+                groundCheckBoxSize,
+                0f,
+                groundLayer
+            );
 
-            if (!overlapCollider)
-                return false;
-            
-            return overlapCollider.gameObject != gameObject;
+            return overlapCollider && overlapCollider.gameObject != gameObject;
         }
-        
+
         private void OnDrawGizmos()
         {
-            // Draw IsGround()
             Gizmos.color = IsGrounded() ? Color.green : Color.red;
-            Gizmos.DrawWireSphere((Vector2)transform.position + groundCheckOffset, groundCheckRadius);
+            Gizmos.DrawWireCube((Vector2)transform.position + groundCheckOffset, groundCheckBoxSize);
         }
     }
 }
-
