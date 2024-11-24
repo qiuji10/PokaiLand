@@ -1,10 +1,10 @@
-﻿namespace PokaiLand.Player
+﻿namespace PokaiLand.Utilities
 {
     using System;
     using System.Collections.Generic;
     using UnityEngine;
 
-    public static class Utility
+    public static class GameplayUtility
     {
         /// <summary>
         /// Finds the closest object to a given position from a collection based on a predicate filter.

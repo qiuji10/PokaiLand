@@ -1,5 +1,6 @@
 using PokaiLand.Enum;
 using PokaiLand.Input;
+using PokaiLand.Utilities;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -35,10 +36,22 @@ namespace PokaiLand.Item
         [Rpc(SendTo.Server)]
         private void OnPickServerRpc(ulong pickerClientId)
         {
-            Debug.Log($"{pickerClientId} picked");
-            NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(pickerClientId, out var clientNetworkObject);
-            _holderClientId.Value = pickerClientId;
+            var clientNetworkObject = NetworkUtils.GetNetworkObject(pickerClientId);
+            if (clientNetworkObject == null) return;
+            
             _isPickedUp.Value = NetworkObject.TrySetParent(clientNetworkObject);
+            _holderClientId.Value = pickerClientId;
+            OnPickClientRpc(pickerClientId);
+            //Debug.Log($"{pickerClientId} picked");
+        }
+
+        [Rpc(SendTo.ClientsAndHost)]
+        private void OnPickClientRpc(ulong pickerClientId)
+        {
+            var clientNetworkObject = NetworkUtils.GetNetworkObject(pickerClientId);
+            
+            if (clientNetworkObject)
+                NetworkObject.transform.position = clientNetworkObject.transform.position;
         }
 
         public void OnDrop()

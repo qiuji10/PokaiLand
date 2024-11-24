@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using PokaiLand.Enum;
-using PokaiLand.Player.PokaiLand.Utilities;
+using PokaiLand.Utilities;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -67,6 +67,7 @@ namespace PokaiLand.Player
                 {
                     _interactableHandler.CurrentTarget.Interact(new InteractInfo(NetworkObject.NetworkObjectId));
                     ((Key)_currentHoldingPickable).DespawnKey();
+                    _currentHoldingPickable = null;
                     return;
                 }
             }

@@ -53,7 +53,7 @@ namespace PokaiLand.Player
                 return;
             }
             
-            if (e.horizontalVelocity != 0)
+            if (e.HorizontalVelocity != 0)
                 anim.Play(ANIM_Player_Walk);
             else
                 anim.Play(ANIM_Player_Idle);

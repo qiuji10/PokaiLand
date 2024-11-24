@@ -2,11 +2,11 @@
 {
     struct PlayerMovementEvent
     {
-        public float horizontalVelocity;
+        public readonly float HorizontalVelocity;
 
         public PlayerMovementEvent(float horizontalVelocity)
         {
-            this.horizontalVelocity = horizontalVelocity;
+            this.HorizontalVelocity = horizontalVelocity;
         }
     }
 

@@ -8,17 +8,9 @@ namespace PokaiLand.GameMode
     public class GameModeManager : NetworkBehaviour
     {
         [SerializeReference, SubclassSelector] BaseGameMode gameMode;
-        private static GameModeManager Instance { get; set; }
 
         private void Awake()
         {
-            if (Instance == null)
-                Instance = this;
-            else if (Instance != this)
-                Destroy(gameObject);
-            
-            DontDestroyOnLoad(gameObject);
-
             var type = gameMode.GetType();
             gameMode = Activator.CreateInstance(type, new object[] { this }) as BaseGameMode;
         }
