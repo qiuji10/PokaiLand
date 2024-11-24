@@ -168,7 +168,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  groundCheckOffset: {x: 0, y: -0.45}
+  groundCheckOffset: {x: 0, y: -0.5}
   groundCheckBoxSize: {x: 1, y: 0.1}
 --- !u!61 &6330958857572125372
 BoxCollider2D:
