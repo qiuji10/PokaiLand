@@ -3,12 +3,11 @@ using UnityEngine.InputSystem;
 
 namespace PokaiLand
 {
-    public interface IPickable
+    public interface IPickable : IInteractable
     {
         bool IsPickedUp { get; }
         bool CanDrop { get; }
         ulong HolderClientId { get; }
-        InputAction InputAction { get; }
         void OnPick(ulong pickerClientId);
         void OnDrop();
     }

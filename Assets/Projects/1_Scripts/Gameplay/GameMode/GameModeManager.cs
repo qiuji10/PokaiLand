@@ -18,6 +18,9 @@ namespace PokaiLand.GameMode
                 Destroy(gameObject);
             
             DontDestroyOnLoad(gameObject);
+
+            var type = gameMode.GetType();
+            gameMode = Activator.CreateInstance(type, new object[] { this }) as BaseGameMode;
         }
 
         public override void OnNetworkSpawn()
@@ -34,18 +37,20 @@ namespace PokaiLand.GameMode
 
         private void OnClientConnected(ulong clientId)
         {
-            gameMode.AddClientToIdList(clientId);
-            
             if (IsServer)
+            {
+                gameMode.AddClientToIdList(clientId);
                 gameMode.OnClientConnected(clientId);
+            }
         }
 
         private void OnClientDisconnected(ulong clientId)
         {
-            gameMode.RemoveClientFromIdList(clientId);
-            
             if (IsServer)
+            {
+                gameMode.RemoveClientFromIdList(clientId);
                 gameMode.OnClientDisconnected(clientId);
+            }
         }
     }
 }

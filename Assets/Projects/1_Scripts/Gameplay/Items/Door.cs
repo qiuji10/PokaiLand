@@ -14,7 +14,7 @@ namespace PokaiLand.Item
 
         public EInteractable Type => EInteractable.Door;
         public InputAction InputAction => new PlayerControls().Player.Interact;
-    
+        
         private readonly NetworkVariable<bool> _isOpen = new();
 
         public void OnEnable()
@@ -27,6 +27,20 @@ namespace PokaiLand.Item
             _isOpen.OnValueChanged -= OnDoorStateChanged;
         }
 
+        public void Interact(InteractInfo info)
+        {
+            if (!_isOpen.Value)
+            {
+                OpenDoorServerRpc();
+            }
+        }
+
+        [Rpc(SendTo.Server)]
+        private void OpenDoorServerRpc()
+        {
+            _isOpen.Value = true;
+        }
+        
         private void OnDoorStateChanged(bool previousValue, bool newValue)
         {
             spriteRenderer.sprite = newValue ? spOpen : spClose;

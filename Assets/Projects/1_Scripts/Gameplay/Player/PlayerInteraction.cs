@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using PokaiLand.Enum;
 using PokaiLand.Player.PokaiLand.Utilities;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Key = PokaiLand.Item.Key;
 
 namespace PokaiLand.Player
 {
@@ -44,34 +45,47 @@ namespace PokaiLand.Player
             if (_playerControls == null) return;
 
             _playerControls.Enable();
-            _playerControls.Player.Interact.performed += OnPlayerPickAttempt;
+            _playerControls.Player.Interact.performed += OnPlayerInteractAttempt;
         }
 
         private void OnDisable()
         {
             if (_playerControls == null) return;
 
-            _playerControls.Player.Interact.performed -= OnPlayerPickAttempt;
+            _playerControls.Player.Interact.performed -= OnPlayerInteractAttempt;
             _playerControls.Disable();
         }
 
-        private void OnPlayerPickAttempt(InputAction.CallbackContext ctx)
+        private void OnPlayerInteractAttempt(InputAction.CallbackContext ctx)
         {
-            if (_currentHoldingPickable != null && _currentHoldingPickable.CanDrop)
+            if (_interactableHandler.CurrentTarget != null)
             {
-                _currentHoldingPickable.OnDrop();
-                _currentHoldingPickable = null;
-                return;
+                bool inDoorRange = _interactableHandler.CurrentTarget is { Type: EInteractable.Door };
+                bool holdingKey = _currentHoldingPickable is { Type: EInteractable.Key };
+                
+                if (inDoorRange && holdingKey)
+                {
+                    _interactableHandler.CurrentTarget.Interact(new InteractInfo(NetworkObject.NetworkObjectId));
+                    ((Key)_currentHoldingPickable).DespawnKey();
+                    return;
+                }
             }
             
-            if (_pickableHandler.CurrentTarget == null) return;
-            
-            var pickable = _pickableHandler.CurrentTarget;
-            
-            if (!pickable.IsPickedUp)
+            if (_currentHoldingPickable != null)
             {
-                _currentHoldingPickable = pickable;
-                pickable.OnPick(NetworkObject.NetworkObjectId);
+                if (_currentHoldingPickable.CanDrop)
+                {
+                    _currentHoldingPickable.OnDrop();
+                    _currentHoldingPickable = null;
+                }
+            }
+            else
+            {
+                if (_pickableHandler.CurrentTarget is { IsPickedUp: false })
+                {
+                    _currentHoldingPickable = _pickableHandler.CurrentTarget;
+                    _currentHoldingPickable.OnPick(NetworkObject.NetworkObjectId);
+                }
             }
         }
         
