@@ -19,10 +19,14 @@ namespace PokaiLand.GameMode
         {
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+            
+            gameMode.OnNetworkStart();
         }
         
         public override void OnNetworkDespawn()
         {
+            gameMode.OnNetworkStop();
+            
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
         }

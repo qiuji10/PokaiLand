@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PokaiLand.Enum;
+using PokaiLand.Events;
 using PokaiLand.Utilities;
 using Unity.Netcode;
 using UnityEngine;
@@ -29,8 +30,7 @@ namespace PokaiLand.Player
 
             _interactableHandler = new CollisionHandler<IInteractable>(
                 transform,
-                interactable => ((MonoBehaviour)interactable).transform.position,
-                interactable => true // Add conditions for valid interactables if needed
+                interactable => ((MonoBehaviour)interactable).transform.position
             );
         }
 
@@ -65,9 +65,15 @@ namespace PokaiLand.Player
                 
                 if (inDoorRange && holdingKey)
                 {
-                    _interactableHandler.CurrentTarget.Interact(new InteractInfo(NetworkObject.NetworkObjectId));
+                    _interactableHandler.CurrentTarget.Interact(new InteractInfo(NetworkObjectId));
                     ((Key)_currentHoldingPickable).DespawnKey();
                     _currentHoldingPickable = null;
+                    return;
+                }
+
+                if (inDoorRange)
+                {
+                    _interactableHandler.CurrentTarget.Interact(new InteractInfo(NetworkObjectId));
                     return;
                 }
             }
@@ -85,7 +91,7 @@ namespace PokaiLand.Player
                 if (_pickableHandler.CurrentTarget is { IsPickedUp: false })
                 {
                     _currentHoldingPickable = _pickableHandler.CurrentTarget;
-                    _currentHoldingPickable.OnPick(NetworkObject.NetworkObjectId);
+                    _currentHoldingPickable.OnPick(NetworkObjectId);
                 }
             }
         }

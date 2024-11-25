@@ -10,14 +10,21 @@ namespace PokaiLand.GameMode
     {
         [SerializeField] protected NetworkList<ulong> ClientIds = new NetworkList<ulong>();
         protected static NetworkManager NetworkManager => NetworkManager.Singleton;
+        protected NetworkBehaviour NetworkBehaviour;
 
         #region Constructor Deconstructor
         protected BaseGameMode(NetworkBehaviour networkBehaviour)
         {
+            this.NetworkBehaviour = networkBehaviour;
             InitNetworkVariables(networkBehaviour);
         }
         
         ~BaseGameMode()
+        {
+            OnDeconstructGameMode();
+        }
+ 
+        protected virtual void OnDeconstructGameMode()
         {
             DisposeNetworkVariables();
         }
@@ -75,14 +82,18 @@ namespace PokaiLand.GameMode
         }
         #endregion
         
-        #region Client Ids
+        #region Network
         public void AddClientToIdList(ulong clientId) => ClientIds.Add(clientId);
         public void RemoveClientFromIdList(ulong clientId) => ClientIds.Remove(clientId);
         public int GetPlayerCount() => ClientIds.Count;
         #endregion
+
+        public virtual void OnNetworkStart() { }
         
-        public virtual void StartGame() { }
-        public virtual void EndGame() { }
+        public virtual void OnNetworkStop() { }
+        
+        public virtual void StartGameRpc() { }
+        public virtual void EndGameRpc() { }
         public virtual void OnClientConnected(ulong clientId) { }
         public virtual void OnClientDisconnected(ulong clientId) { }
     }

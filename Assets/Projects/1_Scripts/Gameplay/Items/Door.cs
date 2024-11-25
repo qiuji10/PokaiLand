@@ -1,4 +1,5 @@
 using PokaiLand.Enum;
+using PokaiLand.Events;
 using PokaiLand.Input;
 using Unity.Netcode;
 using UnityEngine;
@@ -32,6 +33,10 @@ namespace PokaiLand.Item
             if (!_isOpen.Value)
             {
                 OpenDoorServerRpc();
+            }
+            else
+            {
+                EventBus.Execute(new EnterDoorEvent(info.ClientId));
             }
         }
 
