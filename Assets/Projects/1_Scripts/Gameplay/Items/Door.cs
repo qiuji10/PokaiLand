@@ -13,6 +13,7 @@ namespace PokaiLand.Item
         [SerializeField] private Sprite spOpen;
         [SerializeField] private Sprite spClose;
 
+        public bool IsOpen => _isOpen.Value;
         public EInteractable Type => EInteractable.Door;
         public InputAction InputAction => new PlayerControls().Player.Interact;
         

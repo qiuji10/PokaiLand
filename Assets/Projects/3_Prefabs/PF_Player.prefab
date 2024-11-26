@@ -143,6 +143,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 1068523442
   InScenePlacedSourceGlobalObjectIdHash: 1068523442
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -150,6 +152,8 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &7014950387589128917
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,6 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5d6679ba7f96974fa117175abe7406b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 10
   airMoveThreshold: 0.2
   jumpForce: 10
@@ -255,6 +260,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2563ecfbe337dda44b7b4cbdc76ddaae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 0
+  AuthorityMode: 0
+  TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
@@ -272,6 +281,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
   Interpolate: 0
   SlerpPosition: 0
 --- !u!114 &3548924095094488461
@@ -286,6 +296,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkRigidbodyBaseExpanded: 0
+  UseRigidBodyForMotion: 0
+  AutoUpdateKinematicState: 1
+  AutoSetKinematicOnDespawn: 1
 --- !u!114 &949360902951459918
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,6 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b645a392a8847774880434e19e5a8c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   spriteRenderer: {fileID: 970882221613779295}
   anim: {fileID: 1706354249356069274}
   playerColor:
@@ -371,6 +387,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e05b0b2c62279d746980b464e938c420, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   TransitionStateInfoList: []
   m_Animator: {fileID: 1706354249356069274}
 --- !u!114 &-943610361845992974
@@ -385,3 +402,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f2fe74118b34174b72c23bf7f3b650c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  collider2d: {fileID: 6330958857572125372}

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using PokaiLand.Enum;
 using PokaiLand.Events;
+using PokaiLand.Item;
 using PokaiLand.Utilities;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using Key = PokaiLand.Item.Key;
 
 namespace PokaiLand.Player
@@ -13,6 +15,7 @@ namespace PokaiLand.Player
 
     public class PlayerInteraction : NetworkBehaviour
     {
+        [SerializeField] private Collider2D collider2d;
         private PlayerControls _playerControls;
         private IPickable _currentHoldingPickable;
         private CollisionHandler<IPickable> _pickableHandler;
@@ -24,12 +27,14 @@ namespace PokaiLand.Player
             
             _pickableHandler = new CollisionHandler<IPickable>(
                 transform,
+                collider2d,
                 pickable => ((MonoBehaviour)pickable).transform.position,
                 pickable => !pickable.IsPickedUp
             );
 
             _interactableHandler = new CollisionHandler<IInteractable>(
                 transform,
+                collider2d,
                 interactable => ((MonoBehaviour)interactable).transform.position
             );
         }
@@ -71,7 +76,7 @@ namespace PokaiLand.Player
                     return;
                 }
 
-                if (inDoorRange)
+                if (inDoorRange && ((Door)_interactableHandler.CurrentTarget).IsOpen)
                 {
                     _interactableHandler.CurrentTarget.Interact(new InteractInfo(NetworkObjectId));
                     return;
