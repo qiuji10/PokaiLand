@@ -1,4 +1,4 @@
-﻿namespace PokaiLand.Utilities
+﻿namespace PokaiLand.Utility
 {
     using System;
     using System.Collections.Generic;

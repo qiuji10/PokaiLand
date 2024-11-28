@@ -1,6 +1,6 @@
 using PokaiLand.Enum;
 using PokaiLand.Input;
-using PokaiLand.Utilities;
+using PokaiLand.Utility;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;

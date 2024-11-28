@@ -1,31 +1,43 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using PokaiLand.Enum;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace PokaiLand.GameMode
 {
-    public class GameModeManager : NetworkBehaviour
+    public class GameModeManager : NetworkBehaviour, ISystem<GameModeManager>
     {
-        [SerializeReference, SubclassSelector] BaseGameMode gameMode;
+        [SerializeField] private EGameMode gameModeType;
+        public BaseGameMode GameMode { get; private set; }
 
-        private void Awake()
+        /// <summary>
+        /// Init GameMode
+        /// </summary>
+        /// <param name="args">NetworkBehaviour, CameraSystem</param>
+        public GameModeManager Init(params object[] args)
         {
-            var type = gameMode.GetType();
-            gameMode = Activator.CreateInstance(type, new object[] { this }) as BaseGameMode;
+            var argsWithThis = new object[] { this }.Concat(args).ToArray();
+            var type = GameModeConfig.Binding[gameModeType];
+            GameMode = Activator.CreateInstance(type, argsWithThis) as BaseGameMode;
+            return this;
         }
 
         public override void OnNetworkSpawn()
         {
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+
+            if (GameMode == null)
+                Init(CameraSystem.Instance);
             
-            gameMode.OnNetworkStart();
+            GameMode.OnNetworkStart();
         }
         
         public override void OnNetworkDespawn()
         {
-            gameMode.OnNetworkStop();
+            GameMode.OnNetworkStop();
             
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
@@ -35,8 +47,8 @@ namespace PokaiLand.GameMode
         {
             if (IsServer)
             {
-                gameMode.AddClientToIdList(clientId);
-                gameMode.OnClientConnected(clientId);
+                GameMode.AddClientToIdList(clientId);
+                GameMode.OnClientConnected(clientId);
             }
         }
 
@@ -44,8 +56,8 @@ namespace PokaiLand.GameMode
         {
             if (IsServer)
             {
-                gameMode.RemoveClientFromIdList(clientId);
-                gameMode.OnClientDisconnected(clientId);
+                GameMode.RemoveClientFromIdList(clientId);
+                GameMode.OnClientDisconnected(clientId);
             }
         }
     }

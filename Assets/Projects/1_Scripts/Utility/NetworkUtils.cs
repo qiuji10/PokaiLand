@@ -1,6 +1,6 @@
 ﻿using Unity.Netcode;
 
-namespace PokaiLand.Utilities
+namespace PokaiLand.Utility
 {
     public static class NetworkUtils
     {

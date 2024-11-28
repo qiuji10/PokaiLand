@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace PokaiLand.Utilities
+namespace PokaiLand.Utility
 {
     public class CollisionHandler<T> where T : class
     {

@@ -10,26 +10,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Gameplay System Group
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: b0d375402160f45449e6d956d063dbe8
+  m_GroupName: Gameplay System Group
+  m_GUID: 117fc2a59870ee349bcb32cd29b182d0
   m_SerializeEntries:
-  - m_GUID: a15e3f1545232374783ab79920c223f1
-    m_Address: PF_Env_Base
+  - m_GUID: 61ba63f793f70d645a497c72a424dd2d
+    m_Address: PF_System_Network Manager
     m_ReadOnly: 0
-    m_SerializedLabels: []
+    m_SerializedLabels:
+    - Network
+    - System
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b6fb7cb6a3d21904e94d890cf99a16f5
-    m_Address: PF_Camera_Virtual
+  - m_GUID: a08c512b387dabc42bb94ed177e2d2d6
+    m_Address: PF_System_Camera
     m_ReadOnly: 0
     m_SerializedLabels:
     - Camera
-    - Default
+    - System
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f0287dfa79dc79c46b20a3126cbbffa2
+    m_Address: PF_System_Game Mode Manager
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - GameMode
+    - System
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6197031f1ead15c4ebcff04cc189bfdc, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: fc20bf44eae6f034cb5e46d043fce378, type: 2}
-    - {fileID: 11400000, guid: 021b52697d911114384d40fa8e1ad098, type: 2}
+    - {fileID: 11400000, guid: ff6d295f289f25e45be56129657d956a, type: 2}
+    - {fileID: 11400000, guid: 485d4ab9e7d9db041826e4a51fc9f5eb, type: 2}

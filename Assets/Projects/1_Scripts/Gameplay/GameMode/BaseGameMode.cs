@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using PokaiLand.Enum;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,29 +9,44 @@ namespace PokaiLand.GameMode
 {
     public abstract class BaseGameMode
     {
-        [SerializeField] protected NetworkList<ulong> ClientIds = new NetworkList<ulong>();
+        protected NetworkList<ulong> ClientIds = new NetworkList<ulong>();
+        protected readonly NetworkBehaviour NetworkBehaviour;
+        protected readonly CameraSystem CameraSystem;
+        protected bool NetworkInitialized => NetworkBehaviour != null && (NetworkBehaviour.IsServer || NetworkBehaviour.IsClient);
         protected static NetworkManager NetworkManager => NetworkManager.Singleton;
-        protected NetworkBehaviour NetworkBehaviour;
 
         #region Constructor Deconstructor
-        protected BaseGameMode(NetworkBehaviour networkBehaviour)
+        protected BaseGameMode(params object[] args)
         {
-            this.NetworkBehaviour = networkBehaviour;
-            InitNetworkVariables(networkBehaviour);
+            NetworkBehaviour = FindArgs<NetworkBehaviour>(args);
+            CameraSystem = CameraSystem.Instance;
+            InitNetworkVariables(NetworkBehaviour);
         }
-        
+
         ~BaseGameMode()
         {
             OnDeconstructGameMode();
         }
- 
+
         protected virtual void OnDeconstructGameMode()
         {
             DisposeNetworkVariables();
         }
+        
+        private T FindArgs<T>(object[] args)
+        {
+            var type = typeof(T);
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] is T)
+                    return (T)args[i];
+            }
+
+            throw new NullReferenceException($"GameMode: Can't find args of type {type}");
+        }
         #endregion
 
-        #region Network Variables
+        #region Network Variables Reflection
         private void InitNetworkVariables(NetworkBehaviour networkBehaviour)
         {
             // Get all fields in this instance, including private and protected ones
@@ -88,12 +104,12 @@ namespace PokaiLand.GameMode
         public int GetPlayerCount() => ClientIds.Count;
         #endregion
 
+        public abstract ECameraType CameraType { get; }
+
         public virtual void OnNetworkStart() { }
-        
         public virtual void OnNetworkStop() { }
-        
-        public virtual void StartGameRpc() { }
-        public virtual void EndGameRpc() { }
+        public virtual void StartGame() { }
+        public virtual void EndGame() { }
         public virtual void OnClientConnected(ulong clientId) { }
         public virtual void OnClientDisconnected(ulong clientId) { }
     }

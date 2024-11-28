@@ -59,6 +59,8 @@ MonoBehaviour:
   m_BuildAddressablesWithPlayerBuild: 0
   m_overridePlayerVersion: '[UnityEditor.PlayerSettings.bundleVersion]'
   m_GroupAssets:
+  - {fileID: 11400000, guid: 7676b1bdd027c0445b26d10403d78e41, type: 2}
+  - {fileID: 11400000, guid: e866aee197c65904e9a9c86955cfcb4d, type: 2}
   - {fileID: 11400000, guid: aace7ebcfaacae1428efb25ad99828bc, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
@@ -98,7 +100,14 @@ MonoBehaviour:
     m_ProfileVersion: 1
   m_LabelTable:
     m_LabelNames:
-    - default
+    - System
+    - Camera
+    - GameMode
+    - Network
+    - Camera
+    - Network
+    - GameMode
+    - Default
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 7d840605fec2f544bbd3c596e9e908a3, type: 2}

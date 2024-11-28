@@ -2,7 +2,7 @@
 using PokaiLand.Enum;
 using PokaiLand.Events;
 using PokaiLand.Item;
-using PokaiLand.Utilities;
+using PokaiLand.Utility;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;

@@ -10,26 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
-  m_Name: Default Local Group
+  m_Name: Gameplay Element Group
   m_EditorClassIdentifier: 
-  m_GroupName: Default Local Group
-  m_GUID: b0d375402160f45449e6d956d063dbe8
+  m_GroupName: Gameplay Element Group
+  m_GUID: a675dca9715010a4e9fe0c12f5f1be76
   m_SerializeEntries:
-  - m_GUID: a15e3f1545232374783ab79920c223f1
-    m_Address: PF_Env_Base
+  - m_GUID: 2eaec7b664cdf954d93f83068281c475
+    m_Address: PF_Interactive_Key
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: b6fb7cb6a3d21904e94d890cf99a16f5
-    m_Address: PF_Camera_Virtual
+  - m_GUID: 6707dca434c20b24e8a43b257eb85988
+    m_Address: PF_Interactive_Door
     m_ReadOnly: 0
-    m_SerializedLabels:
-    - Camera
-    - Default
+    m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6197031f1ead15c4ebcff04cc189bfdc, type: 2}
   m_SchemaSet:
     m_Schemas:
-    - {fileID: 11400000, guid: fc20bf44eae6f034cb5e46d043fce378, type: 2}
-    - {fileID: 11400000, guid: 021b52697d911114384d40fa8e1ad098, type: 2}
+    - {fileID: 11400000, guid: 2568ad5d3d691634392636f9c66c316f, type: 2}
+    - {fileID: 11400000, guid: 1408f57e15ac3ad4dafb0019981a2522, type: 2}

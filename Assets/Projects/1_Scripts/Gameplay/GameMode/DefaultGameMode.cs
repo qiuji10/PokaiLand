@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using PokaiLand.Enum;
 using PokaiLand.Events;
-using PokaiLand.Utilities;
+using PokaiLand.Network;
+using PokaiLand.Utility;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -11,12 +13,13 @@ namespace PokaiLand.GameMode
     using Player;
     
     [Serializable]
-    public class SimpleGameMode : BaseGameMode
+    public class DefaultGameMode : BaseGameMode
     {
+        public override ECameraType CameraType => ECameraType.Default;
         private const string ENTER_DOOR_MESSAGE = "ENTER_DOOR";
         private const string END_GAME_MESSAGE = "END_GAME";
         
-        public SimpleGameMode(NetworkBehaviour networkBehaviour) : base(networkBehaviour)
+        public DefaultGameMode(NetworkBehaviour networkBehaviour, CameraSystem cameraSystem) : base(networkBehaviour, cameraSystem)
         {
             EventBus.Register<EnterDoorEvent>(OnEnterDoorEvent);
         }
@@ -26,16 +29,16 @@ namespace PokaiLand.GameMode
             base.OnDeconstructGameMode();
             EventBus.Deregister<EnterDoorEvent>(OnEnterDoorEvent);
             
-            NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(ENTER_DOOR_MESSAGE);
-            NetworkManager.Singleton.CustomMessagingManager.UnregisterNamedMessageHandler(END_GAME_MESSAGE);
+            NetworkMessage.Unregister(ENTER_DOOR_MESSAGE);
+            NetworkMessage.Unregister(END_GAME_MESSAGE);
         }
 
         public override void OnNetworkStart()
         {
             base.OnNetworkStart();
             // Register message handlers
-            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(ENTER_DOOR_MESSAGE, HandleEnterDoorMessage);
-            NetworkManager.Singleton.CustomMessagingManager.RegisterNamedMessageHandler(END_GAME_MESSAGE, HandleEndGameMessage);
+            NetworkMessage.Register<EnterDoorEvent>(ENTER_DOOR_MESSAGE, HandleEnterDoorMessage);
+            NetworkMessage.Register(END_GAME_MESSAGE, HandleEndGameMessage);
         }
 
         private NetworkList<FixedString32Bytes> _playerNames = new();
@@ -60,19 +63,16 @@ namespace PokaiLand.GameMode
             Debug.Log($"OnEnterDoorEvent triggered with ClientId: {e.ClientId}");
             
             // Send message to server
-            using var writer = new FastBufferWriter(sizeof(ulong), Allocator.Temp);
-            writer.WriteValueSafe(e.ClientId);
-            NetworkManager.CustomMessagingManager.SendNamedMessage(ENTER_DOOR_MESSAGE, NetworkManager.ServerClientId, writer);
+            NetworkMessage.SendToServer(ENTER_DOOR_MESSAGE, e);
         }
 
-        private void HandleEnterDoorMessage(ulong senderId, FastBufferReader reader)
+        private void HandleEnterDoorMessage(ulong senderId, EnterDoorEvent e)
         {
             if (!NetworkManager.IsServer) return;
             
-            reader.ReadValueSafe(out ulong clientId);
-            Debug.Log($"HandleEnterDoorMessage received on server for ClientId: {clientId}");
+            Debug.Log($"HandleEnterDoorMessage received on server for ClientId: {e.ClientId}");
             
-            var clientNetworkObj = NetworkUtils.GetNetworkObject(clientId);
+            var clientNetworkObj = NetworkUtils.GetNetworkObject(e.ClientId);
             if (clientNetworkObj == null) return;
 
             if (clientNetworkObj.IsSpawned)
@@ -88,24 +88,18 @@ namespace PokaiLand.GameMode
                 }
             }
         }
-
-        private void HandleEndGameMessage(ulong senderId, FastBufferReader reader)
-        {
-            Debug.Log("Game Ended");
-        }
-
-        public override void EndGameRpc()
-        {
-            SendEndGame();
-        }
-
+        
         private void SendEndGame()
         {
             // Create an empty writer since we don't need to send any data
-            using var writer = new FastBufferWriter(0, Allocator.Temp);
-            NetworkManager.CustomMessagingManager.SendNamedMessageToAll(END_GAME_MESSAGE, writer, NetworkDelivery.Reliable);
+            NetworkMessage.SendToAll(END_GAME_MESSAGE);
         }
 
+        private void HandleEndGameMessage(ulong senderId)
+        {
+            Debug.Log("Game Ended");
+        }
+        
         private void UpdatePlayerColor(ulong clientId, int playerIndex)
         {
             var clientNetworkObject = NetworkManager.SpawnManager.GetPlayerNetworkObject(clientId);
