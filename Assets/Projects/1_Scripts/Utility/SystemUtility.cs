@@ -16,10 +16,8 @@ namespace PokaiLand.Utility
             if (locations == null || locations.Count == 0)
                 throw new Exception($"No assets found matching labels: {string.Join(", ", labels)}");
 
-            var instantiateHandle = Addressables.LoadAssetAsync<T>(locations[0]);
-
-            return await instantiateHandle.Task;
-            throw new Exception($"Failed to instantiate or find component of type {typeof(T)} for labels: {string.Join(", ", labels)}");
+            var component = await Addressables.LoadAssetAsync<T>(locations[0]);
+            return component;
         }
         
         public static async UniTask<T> CreateFromAsset<T>(params string[] labels)
@@ -30,8 +28,7 @@ namespace PokaiLand.Utility
             if (locations == null || locations.Count == 0)
                 throw new Exception($"No assets found matching labels: {string.Join(", ", labels)}");
 
-            var instantiateHandle = Addressables.InstantiateAsync(locations[0]);
-            var instantiatedObject = await instantiateHandle.Task;
+            var instantiatedObject = await Addressables.InstantiateAsync(locations[0]);
 
             if (typeof(T) == typeof(GameObject) || typeof(T) == typeof(ScriptableObject))
                 return (T)(object)instantiatedObject;

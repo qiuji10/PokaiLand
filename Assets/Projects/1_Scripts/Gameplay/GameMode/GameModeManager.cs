@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace PokaiLand.GameMode
 {
-    public class GameModeManager : NetworkBehaviour, ISystem<GameModeManager>
+    public class GameModeManager : NetworkBehaviour, INetworkSystem<GameModeManager>
     {
         [SerializeField] private EGameMode gameModeType;
         public BaseGameMode GameMode { get; private set; }
@@ -16,49 +16,18 @@ namespace PokaiLand.GameMode
         /// Init GameMode
         /// </summary>
         /// <param name="args">NetworkBehaviour, CameraSystem</param>
-        public GameModeManager Init(params object[] args)
+        public UniTask<GameModeManager> Init(params object[] args)
         {
             var argsWithThis = new object[] { this }.Concat(args).ToArray();
             var type = GameModeConfig.Binding[gameModeType];
             GameMode = Activator.CreateInstance(type, argsWithThis) as BaseGameMode;
-            return this;
-        }
-
-        public override void OnNetworkSpawn()
-        {
-            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
 
             if (GameMode == null)
-                Init(CameraSystem.Instance);
+                throw new NullReferenceException($"GameMode can't find matchable type {type}");
+         
             
-            GameMode.OnNetworkStart();
-        }
-        
-        public override void OnNetworkDespawn()
-        {
-            GameMode.OnNetworkStop();
             
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
-        }
-
-        private void OnClientConnected(ulong clientId)
-        {
-            if (IsServer)
-            {
-                GameMode.AddClientToIdList(clientId);
-                GameMode.OnClientConnected(clientId);
-            }
-        }
-
-        private void OnClientDisconnected(ulong clientId)
-        {
-            if (IsServer)
-            {
-                GameMode.RemoveClientFromIdList(clientId);
-                GameMode.OnClientDisconnected(clientId);
-            }
+            return UniTask.FromResult(this);
         }
     }
 }

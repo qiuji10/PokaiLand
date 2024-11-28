@@ -9,9 +9,8 @@ namespace PokaiLand.GameMode
 {
     public abstract class BaseGameMode
     {
-        protected NetworkList<ulong> ClientIds = new NetworkList<ulong>();
         protected readonly NetworkBehaviour NetworkBehaviour;
-        protected readonly CameraSystem CameraSystem;
+        protected readonly CameraNetworkSystem CameraNetworkSystem;
         protected bool NetworkInitialized => NetworkBehaviour != null && (NetworkBehaviour.IsServer || NetworkBehaviour.IsClient);
         protected static NetworkManager NetworkManager => NetworkManager.Singleton;
 
@@ -19,7 +18,7 @@ namespace PokaiLand.GameMode
         protected BaseGameMode(params object[] args)
         {
             NetworkBehaviour = FindArgs<NetworkBehaviour>(args);
-            CameraSystem = CameraSystem.Instance;
+            CameraNetworkSystem = CameraNetworkSystem.Instance;
             InitNetworkVariables(NetworkBehaviour);
         }
 
@@ -97,16 +96,11 @@ namespace PokaiLand.GameMode
             return false;
         }
         #endregion
-        
-        #region Network
-        public void AddClientToIdList(ulong clientId) => ClientIds.Add(clientId);
-        public void RemoveClientFromIdList(ulong clientId) => ClientIds.Remove(clientId);
-        public int GetPlayerCount() => ClientIds.Count;
-        #endregion
 
         public abstract ECameraType CameraType { get; }
 
-        public virtual void OnNetworkStart() { }
+        public virtual void OnServerInit() { }
+        public virtual void OnClientInit() { }
         public virtual void OnNetworkStop() { }
         public virtual void StartGame() { }
         public virtual void EndGame() { }

@@ -15,13 +15,28 @@ namespace PokaiLand.GameMode
     [Serializable]
     public class DefaultGameMode : BaseGameMode
     {
+        private NetworkList<FixedString32Bytes> _playerNames = new();
+        
+        private readonly Color[] _colorIndexes = new[]
+        {
+            Color.red,
+            Color.green,
+            Color.blue,
+            Color.yellow,
+        };
+        
+        private int _playerCompleteCount;
+        
         public override ECameraType CameraType => ECameraType.Default;
         private const string ENTER_DOOR_MESSAGE = "ENTER_DOOR";
         private const string END_GAME_MESSAGE = "END_GAME";
         
-        public DefaultGameMode(NetworkBehaviour networkBehaviour, CameraSystem cameraSystem) : base(networkBehaviour, cameraSystem)
+        public DefaultGameMode(NetworkBehaviour networkBehaviour, CameraNetworkSystem cameraNetworkSystem) : base(networkBehaviour, cameraNetworkSystem)
         {
             EventBus.Register<EnterDoorEvent>(OnEnterDoorEvent);
+            
+            NetworkMessage.Register<EnterDoorEvent>(ENTER_DOOR_MESSAGE, HandleEnterDoorMessage);
+            NetworkMessage.Register(END_GAME_MESSAGE, HandleEndGameMessage);
         }
 
         protected override void OnDeconstructGameMode()
@@ -33,29 +48,10 @@ namespace PokaiLand.GameMode
             NetworkMessage.Unregister(END_GAME_MESSAGE);
         }
 
-        public override void OnNetworkStart()
-        {
-            base.OnNetworkStart();
-            // Register message handlers
-            NetworkMessage.Register<EnterDoorEvent>(ENTER_DOOR_MESSAGE, HandleEnterDoorMessage);
-            NetworkMessage.Register(END_GAME_MESSAGE, HandleEndGameMessage);
-        }
-
-        private NetworkList<FixedString32Bytes> _playerNames = new();
-        private int _playerCompleteCount;
-        
-        private readonly Color[] _playerColors = new[]
-        {
-            Color.red,
-            Color.green,
-            Color.blue,
-            Color.yellow,
-        };
-
         public override void OnClientConnected(ulong clientId)
         {
             _playerNames.Add($"Player {clientId}");
-            UpdatePlayerColor(clientId, ClientIds.IndexOf(clientId));
+            //UpdatePlayerColor(clientId, ClientIds.IndexOf(clientId));
         }
         
         private void OnEnterDoorEvent(EnterDoorEvent e)
@@ -113,7 +109,7 @@ namespace PokaiLand.GameMode
         
         private Color GetPlayerColor(int playerIndex)
         {
-            return playerIndex < _playerColors.Length ? _playerColors[playerIndex] : Color.gray;
+            return playerIndex < _colorIndexes.Length ? _colorIndexes[playerIndex] : Color.gray;
         }
     }
 }
