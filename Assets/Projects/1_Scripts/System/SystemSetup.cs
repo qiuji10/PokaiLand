@@ -23,15 +23,8 @@ namespace PokaiLand.Infrastructure
                 var networkManager = NetworkManager.Singleton ?? await CreateSystem<NetworkManager>(EAddressableLabels.Network);
                 var cameraSystem = CameraSystem.Instance ?? await CreateSystem<CameraSystem>(EAddressableLabels.Camera);
                 var gameModeManager = await CreateSystem<GameModeManager>(EAddressableLabels.GameMode);
+                //await UniTask.WaitUntil(() => networkManager.IsServer || networkManager.IsClient);
 
-                // await UniTask.WaitUntil(() => networkManager.IsServer || networkManager.IsClient);
-                //
-                // if (networkManager.IsServer)
-                // {
-                //     var netObj = gameModeManager.GetComponent<NetworkObject>();
-                //     netObj.Spawn();
-                // }
-                //
                 gameModeManager.Init(cameraSystem);
                 await cameraSystem.Init(gameModeManager.GameMode.CameraType);
             }
@@ -51,6 +44,23 @@ namespace PokaiLand.Infrastructure
             
             return await SystemUtility.CreateFromAsset<T>(array);
         }
+        
+        // private static async UniTask<T> CreateNetworkSystem<T>(EAddressableLabels labels) where T : MonoBehaviour
+        // {
+        //     var array = AddressableLabels
+        //         .Where(l => labels.HasFlag(l))
+        //         .Select(l => l.ToString())
+        //         .Concat(new[] { SystemLabel })
+        //         .ToArray();
+        //
+        //     T prefab = await SystemUtility.FindAsset<T>(array);
+        //     if (prefab.TryGetComponent(out NetworkObject networkObject))
+        //     {
+        //         return networkObject.InstantiateAndSpawn(NetworkManager.Singleton).GetComponent<T>();
+        //     }
+        //     
+        //     throw new NullReferenceException($"Can't find network object of type {typeof(T).Name}");
+        // }
         
         private static async UniTask<T> FindAsset<T>(EAddressableLabels labels)
         {
