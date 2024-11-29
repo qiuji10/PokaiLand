@@ -35,8 +35,17 @@ namespace PokaiLand.GameMode
         {
             EventBus.Register<EnterDoorEvent>(OnEnterDoorEvent);
             
+            
             NetworkMessage.Register<EnterDoorEvent>(ENTER_DOOR_MESSAGE, HandleEnterDoorMessage);
             NetworkMessage.Register(END_GAME_MESSAGE, HandleEndGameMessage);
+
+            if (NetworkManager.IsServer)
+            {
+                NetworkManager.OnClientConnectedCallback += InitPlayer;
+                NetworkManager.OnClientConnectedCallback += InitPlayer;
+                
+                InitPlayer(NetworkManager.LocalClientId);
+            }
         }
 
         protected override void OnDeconstructGameMode()
@@ -46,12 +55,24 @@ namespace PokaiLand.GameMode
             
             NetworkMessage.Unregister(ENTER_DOOR_MESSAGE);
             NetworkMessage.Unregister(END_GAME_MESSAGE);
+            
+            if (NetworkManager.IsServer)
+            {
+                NetworkManager.OnClientConnectedCallback -= InitPlayer;
+                NetworkManager.OnClientConnectedCallback -= InitPlayer;
+            }
         }
 
-        public override void OnClientConnected(ulong clientId)
+        public override void OnServerInit()
+        {
+
+        }
+
+        private void InitPlayer(ulong clientId)
         {
             _playerNames.Add($"Player {clientId}");
-            //UpdatePlayerColor(clientId, ClientIds.IndexOf(clientId));
+            int index = NetworkManager.Singleton.ConnectedClientsList.Count - 1;
+            UpdatePlayerColor(clientId, index);
         }
         
         private void OnEnterDoorEvent(EnterDoorEvent e)

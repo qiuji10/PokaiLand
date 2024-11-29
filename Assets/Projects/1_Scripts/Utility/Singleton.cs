@@ -30,6 +30,11 @@ namespace PokaiLand.Utility
             if (PreventDestroyOnLoad)
                 DontDestroyOnLoad(this);
         }
+
+        private void OnDestroy()
+        {
+            _instance = null;
+        }
     }
 
     public class Singleton<T> where T : new()

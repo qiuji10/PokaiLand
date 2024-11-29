@@ -2,7 +2,7 @@ using System;
 
 namespace PokaiLand.Enum
 {
-    [Flags]
+    [Serializable, Flags]
     public enum EAddressableLabels
     {
         Camera = 1 << 0,

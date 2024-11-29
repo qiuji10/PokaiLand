@@ -25,8 +25,6 @@ namespace PokaiLand.GameMode
             if (GameMode == null)
                 throw new NullReferenceException($"GameMode can't find matchable type {type}");
          
-            
-            
             return UniTask.FromResult(this);
         }
     }

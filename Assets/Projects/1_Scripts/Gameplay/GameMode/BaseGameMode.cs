@@ -101,10 +101,7 @@ namespace PokaiLand.GameMode
 
         public virtual void OnServerInit() { }
         public virtual void OnClientInit() { }
-        public virtual void OnNetworkStop() { }
         public virtual void StartGame() { }
         public virtual void EndGame() { }
-        public virtual void OnClientConnected(ulong clientId) { }
-        public virtual void OnClientDisconnected(ulong clientId) { }
     }
 }
