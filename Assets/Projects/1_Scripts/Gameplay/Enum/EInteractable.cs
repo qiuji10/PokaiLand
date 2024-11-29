@@ -1,5 +1,8 @@
-﻿namespace PokaiLand.Enum
+﻿using System;
+
+namespace PokaiLand.Enum
 {
+    [Serializable]
     public enum EInteractable
     {
         Key = 0,

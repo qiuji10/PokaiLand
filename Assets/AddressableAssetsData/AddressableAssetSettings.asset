@@ -62,6 +62,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7676b1bdd027c0445b26d10403d78e41, type: 2}
   - {fileID: 11400000, guid: e866aee197c65904e9a9c86955cfcb4d, type: 2}
   - {fileID: 11400000, guid: aace7ebcfaacae1428efb25ad99828bc, type: 2}
+  - {fileID: 11400000, guid: d0eb65123ece3c54aa59737cb7cb324d, type: 2}
   m_BuildSettings:
     m_LogResourceManagerExceptions: 1
     m_BundleBuildPath: Temp/com.unity.addressables/AssetBundles
@@ -108,6 +109,10 @@ MonoBehaviour:
     - Network
     - GameMode
     - Default
+    - Interactive
+    - Key
+    - Door
+    - Map
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 7d840605fec2f544bbd3c596e9e908a3, type: 2}

@@ -1,12 +1,15 @@
 ﻿using PokaiLand.Enum;
 using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace PokaiLand
 {
     public interface IInteractable
     {
+        GameObject gameObject { get; }
         NetworkObject NetworkObject { get; }
+        EAddressableLabels Labels { get; }
         EInteractable Type { get; }
         InputAction InputAction { get; }
         void Interact(InteractInfo info);

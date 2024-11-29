@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -11,6 +12,14 @@ namespace PokaiLand.Infrastructure
 {
     public partial class SystemSetup
     {
+        private readonly RpcHandler<NetworkObject> _findNetworkObjectHandler = new();
+     
+        private readonly string _systemLabel = EAddressableLabels.System.ToString();
+        private readonly IEnumerable<EAddressableLabels> _addressableLabels = System.Enum.GetValues(typeof(EAddressableLabels)).Cast<EAddressableLabels>();
+        private readonly ConcurrentDictionary<Type, object> _systemCache = new ConcurrentDictionary<Type, object>();
+        private readonly Dictionary<EAddressableLabels, ulong> _systemNetworkId = new Dictionary<EAddressableLabels, ulong>();
+
+        
         private async UniTask<T> CreateSystem<T>(EAddressableLabels labels, params object[] args) where T : MonoBehaviour, ISystem<T>
         {
             var array = _addressableLabels
@@ -56,7 +65,7 @@ namespace PokaiLand.Infrastructure
 
             if (NetworkManager.Singleton.IsServer)
             {
-                GameObject prefab = await SystemUtility.FindAsset<GameObject>(array);
+                GameObject prefab = await SystemUtility.FindAssetByLabels<GameObject>(array);
                 var networkObject = prefab.GetComponent<NetworkObject>().InstantiateAndSpawn(NetworkManager);
 
                 if (networkObject.TryGetComponent(out T component))
@@ -72,12 +81,15 @@ namespace PokaiLand.Infrastructure
             else if (NetworkManager.Singleton.IsClient)
             {
                 Debug.Log("start to await");
-                NetworkObject networkSystemObj = await FindNetworkObject(labels);
+                //NetworkObject networkSystemObj = await FindNetworkObject(labels);
+                NetworkObject networkSystemObj = await _findNetworkObjectHandler.Run(() => ServerSendClientNetworkObjectIdRpc(NetworkManager.LocalClientId, labels));
                 Debug.Log("end await");
                 
                 if (networkSystemObj.TryGetComponent(out T component))
                 {
-                    await component.Init(args);
+                    if (component.InitializedOnClientSide)
+                        await component.Init(args);
+                    
                     _systemCache.TryAdd(typeof(T), component);
                     _systemNetworkId.TryAdd(labels, networkSystemObj.NetworkObjectId);
                     return component;
@@ -89,15 +101,7 @@ namespace PokaiLand.Infrastructure
             throw new Exception($"Server or client connection not initiated");
         }
 
-        private UniTaskCompletionSource<NetworkObject> _findNetworkObjectPromise;
-
-        private UniTask<NetworkObject> FindNetworkObject(EAddressableLabels labels)
-        {
-            _findNetworkObjectPromise = new UniTaskCompletionSource<NetworkObject>();
-            Debug.Log("calling server rpc");
-            ServerSendClientNetworkObjectIdRpc(NetworkManager.LocalClientId, labels);
-            return _findNetworkObjectPromise.Task;
-        }
+        
 
         [Rpc(SendTo.Server, DeferLocal = true)]
         private void ServerSendClientNetworkObjectIdRpc(ulong senderClientId, EAddressableLabels labels)
@@ -105,7 +109,8 @@ namespace PokaiLand.Infrastructure
             Debug.Log("server receive rpc call, calling client rpc");
             
             if (!_systemNetworkId.ContainsKey(labels))
-                _findNetworkObjectPromise.TrySetException(new Exception($"labels not found in _systemNetworkId: {labels}"));
+                _findNetworkObjectHandler.SetException(new Exception($"labels not found in _systemNetworkId: {labels}"));
+                //_findNetworkObjectPromise.TrySetException(new Exception($"labels not found in _systemNetworkId: {labels}"));
 
             ClientReceiveNetworkObjectIdRpc(_systemNetworkId[labels], RpcTarget.Single(senderClientId, RpcTargetUse.Temp));
         }
@@ -113,12 +118,14 @@ namespace PokaiLand.Infrastructure
         [Rpc(SendTo.SpecifiedInParams, DeferLocal = true)]
         private void ClientReceiveNetworkObjectIdRpc(ulong networkObjectId, RpcParams prams)
         {
-            Debug.Log("clien receive rpc call, setting result");
+            Debug.Log("client receive rpc call, setting result");
             
             if (!NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(networkObjectId))
-                _findNetworkObjectPromise.TrySetException(new Exception($"networkObjectId not found in SpawnedObjects: {networkObjectId}"));
+                _findNetworkObjectHandler.SetException(new Exception($"networkObjectId not found in SpawnedObjects: {networkObjectId}"));
+                //_findNetworkObjectPromise.TrySetException(new Exception($"networkObjectId not found in SpawnedObjects: {networkObjectId}"));
             
-            _findNetworkObjectPromise.TrySetResult(NetworkManager.SpawnManager.SpawnedObjects[networkObjectId]);
+            _findNetworkObjectHandler.SetResult(NetworkManager.SpawnManager.SpawnedObjects[networkObjectId]);
+            //_findNetworkObjectPromise.TrySetResult(NetworkManager.SpawnManager.SpawnedObjects[networkObjectId]);
         }
         
         public IEnumerable<T> FindNetworkSystem<T>() where T : NetworkBehaviour, INetworkSystem<T>

@@ -22,6 +22,13 @@ MonoBehaviour:
     - Network
     - System
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7877b3edd027026448e2f9116ff495f4
+    m_Address: PF_System_Map
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Map
+    - System
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a08c512b387dabc42bb94ed177e2d2d6
     m_Address: PF_System_Camera
     m_ReadOnly: 0

@@ -14,6 +14,7 @@ namespace PokaiLand.Item
         public bool IsPickedUp => _isPickedUp.Value;
         public bool CanDrop => canDrop;
         public ulong HolderClientId => _holderClientId.Value;
+        public EAddressableLabels Labels => EAddressableLabels.Interactive | EAddressableLabels.Key;
         public EInteractable Type => EInteractable.Key;
         public InputAction InputAction => new PlayerControls().Player.Interact;
 

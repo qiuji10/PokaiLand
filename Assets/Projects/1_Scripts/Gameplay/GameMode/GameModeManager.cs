@@ -9,6 +9,8 @@ namespace PokaiLand.GameMode
 {
     public class GameModeManager : NetworkBehaviour, INetworkSystem<GameModeManager>
     {
+        public bool InitializedOnClientSide => true;
+        
         [SerializeField] private EGameMode gameModeType;
         public BaseGameMode GameMode { get; private set; }
 
@@ -27,5 +29,6 @@ namespace PokaiLand.GameMode
          
             return UniTask.FromResult(this);
         }
+
     }
 }

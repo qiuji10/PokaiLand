@@ -10,11 +10,7 @@ namespace PokaiLand
     
     public interface INetworkSystem<T> : ISystem<T>
     {
+        public bool InitializedOnClientSide { get; }
         public NetworkObject NetworkObject { get; }
-    }
-
-    public interface ISystemBase
-    {
-        void Init(params object[] args);
     }
 }
