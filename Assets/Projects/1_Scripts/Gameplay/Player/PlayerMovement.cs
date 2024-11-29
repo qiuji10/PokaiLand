@@ -7,7 +7,6 @@ using PokaiLand.Events;
 
 namespace PokaiLand.Player
 {
-    using static InputKeys;
     using Input;
 
     public class PlayerMovement : NetworkBehaviour

@@ -37,7 +37,7 @@ namespace PokaiLand.Item
         [Rpc(SendTo.Server)]
         private void OnPickServerRpc(ulong pickerClientId)
         {
-            var clientNetworkObject = NetworkUtils.GetNetworkObject(pickerClientId);
+            var clientNetworkObject = NetworkUtility.GetNetworkObject(pickerClientId);
             if (clientNetworkObject == null) return;
             
             _isPickedUp.Value = NetworkObject.TrySetParent(clientNetworkObject);
@@ -49,7 +49,7 @@ namespace PokaiLand.Item
         [Rpc(SendTo.ClientsAndHost)]
         private void OnPickClientRpc(ulong pickerClientId)
         {
-            var clientNetworkObject = NetworkUtils.GetNetworkObject(pickerClientId);
+            var clientNetworkObject = NetworkUtility.GetNetworkObject(pickerClientId);
             
             if (clientNetworkObject)
                 NetworkObject.transform.position = clientNetworkObject.transform.position;

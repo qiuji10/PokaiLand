@@ -2,7 +2,7 @@
 
 namespace PokaiLand.Utility
 {
-    public static class NetworkUtils
+    public static class NetworkUtility
     {
         public static NetworkObject GetNetworkObject(ulong id)
         {

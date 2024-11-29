@@ -89,7 +89,7 @@ namespace PokaiLand.GameMode
             
             Debug.Log($"HandleEnterDoorMessage received on server for ClientId: {e.ClientId}");
             
-            var clientNetworkObj = NetworkUtils.GetNetworkObject(e.ClientId);
+            var clientNetworkObj = NetworkUtility.GetNetworkObject(e.ClientId);
             if (clientNetworkObj == null) return;
 
             if (clientNetworkObj.IsSpawned)
