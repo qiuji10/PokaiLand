@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using PokaiLand.Enum;
 
-namespace PokaiLand.GameMode
+namespace PokaiLand.GameMode.V1
 {
     public class GameModeConfig
     {

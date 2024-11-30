@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace PokaiLand.GameMode
+namespace PokaiLand.GameMode.V1
 {
     using Player;
     

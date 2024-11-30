@@ -1,7 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using PokaiLand.Enum;
-using PokaiLand.GameMode;
+using PokaiLand.GameMode.V1;
 using PokaiLand.Gameplay.Map;
 using Unity.Netcode;
 using UnityEngine;

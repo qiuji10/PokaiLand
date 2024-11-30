@@ -5,7 +5,7 @@ using PokaiLand.Enum;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace PokaiLand.GameMode
+namespace PokaiLand.GameMode.V1
 {
     public abstract class BaseGameMode
     {
