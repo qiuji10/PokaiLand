@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5136389891533885706}
   - component: {fileID: 4274139872583914004}
-  - component: {fileID: 2163431485825146674}
+  - component: {fileID: -1749624569580471918}
   m_Layer: 0
-  m_Name: PF_System_Game Mode Manager
+  m_Name: PF_System_Game Mode
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 385161801
+  GlobalObjectIdHash: 4229778760
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -58,7 +58,7 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &2163431485825146674
+--- !u!114 &-1749624569580471918
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -67,8 +67,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7794307275307583073}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f57fbab4fa620f4ca42f9008e5572c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 9453b36570034a68b77c7f4d480d9b9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  gameModeType: 0

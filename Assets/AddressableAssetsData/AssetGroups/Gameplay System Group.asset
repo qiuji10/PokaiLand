@@ -37,7 +37,7 @@ MonoBehaviour:
     - System
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f0287dfa79dc79c46b20a3126cbbffa2
-    m_Address: PF_System_Game Mode Manager
+    m_Address: PF_System_Game Mode
     m_ReadOnly: 0
     m_SerializedLabels:
     - GameMode
