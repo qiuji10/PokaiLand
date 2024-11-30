@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 
 namespace PokaiLand.Gameplay.GameMode.V2
@@ -10,23 +11,23 @@ namespace PokaiLand.Gameplay.GameMode.V2
         protected virtual void OnEnable()
         {
             if (!IsServer) return;
-            NetworkManager.OnClientConnectedCallback += OnClientConnected;
-            NetworkManager.OnClientDisconnectCallback += OnClientDisconnected;
+            NetworkManager.OnClientConnectedCallback += ServerOnClientConnected;
+            NetworkManager.OnClientDisconnectCallback += ServerOnClientDisconnected;
         }
         
         protected virtual void OnDisable()
         {
             if (!IsServer) return;
-            NetworkManager.OnClientConnectedCallback -= OnClientConnected;
-            NetworkManager.OnClientDisconnectCallback -= OnClientDisconnected;
+            NetworkManager.OnClientConnectedCallback -= ServerOnClientConnected;
+            NetworkManager.OnClientDisconnectCallback -= ServerOnClientDisconnected;
         }
-
-        protected virtual void OnClientConnected(ulong clientId)
+        
+        protected virtual void ServerOnClientConnected(ulong clientId)
         {
         }
 
-        protected virtual void OnClientDisconnected(ulong clientId)
-        {  
+        protected virtual void ServerOnClientDisconnected(ulong clientId)
+        {
         }
 
         public abstract bool CanStartGame();
