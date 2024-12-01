@@ -70,7 +70,7 @@ namespace PokaiLand.Player
                 
                 if (inDoorRange && holdingKey)
                 {
-                    _interactableHandler.CurrentTarget.Interact(new InteractInfo(NetworkObjectId));
+                    _interactableHandler.CurrentTarget.Interact(new InteractInfo(OwnerClientId));
                     ((Key)_currentHoldingPickable).DespawnKey();
                     _currentHoldingPickable = null;
                     return;
@@ -78,7 +78,7 @@ namespace PokaiLand.Player
 
                 if (inDoorRange && ((Door)_interactableHandler.CurrentTarget).IsOpen)
                 {
-                    _interactableHandler.CurrentTarget.Interact(new InteractInfo(NetworkObjectId));
+                    _interactableHandler.CurrentTarget.Interact(new InteractInfo(OwnerClientId));
                     return;
                 }
             }

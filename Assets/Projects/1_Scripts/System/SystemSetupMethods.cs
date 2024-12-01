@@ -80,10 +80,7 @@ namespace PokaiLand.Infrastructure
             }
             else if (NetworkManager.Singleton.IsClient)
             {
-                Debug.Log("start to await");
-                //NetworkObject networkSystemObj = await FindNetworkObject(labels);
                 NetworkObject networkSystemObj = await _findNetworkObjectHandler.Run(() => ServerSendClientNetworkObjectIdRpc(NetworkManager.LocalClientId, labels));
-                Debug.Log("end await");
                 
                 if (networkSystemObj.TryGetComponent(out T component))
                 {
@@ -106,11 +103,8 @@ namespace PokaiLand.Infrastructure
         [Rpc(SendTo.Server, DeferLocal = true)]
         private void ServerSendClientNetworkObjectIdRpc(ulong senderClientId, EAddressableLabels labels)
         {
-            Debug.Log("server receive rpc call, calling client rpc");
-            
             if (!_systemNetworkId.ContainsKey(labels))
                 _findNetworkObjectHandler.SetException(new Exception($"labels not found in _systemNetworkId: {labels}"));
-                //_findNetworkObjectPromise.TrySetException(new Exception($"labels not found in _systemNetworkId: {labels}"));
 
             ClientReceiveNetworkObjectIdRpc(_systemNetworkId[labels], RpcTarget.Single(senderClientId, RpcTargetUse.Temp));
         }
@@ -118,14 +112,10 @@ namespace PokaiLand.Infrastructure
         [Rpc(SendTo.SpecifiedInParams, DeferLocal = true)]
         private void ClientReceiveNetworkObjectIdRpc(ulong networkObjectId, RpcParams prams)
         {
-            Debug.Log("client receive rpc call, setting result");
-            
             if (!NetworkManager.SpawnManager.SpawnedObjects.ContainsKey(networkObjectId))
                 _findNetworkObjectHandler.SetException(new Exception($"networkObjectId not found in SpawnedObjects: {networkObjectId}"));
-                //_findNetworkObjectPromise.TrySetException(new Exception($"networkObjectId not found in SpawnedObjects: {networkObjectId}"));
-            
+
             _findNetworkObjectHandler.SetResult(NetworkManager.SpawnManager.SpawnedObjects[networkObjectId]);
-            //_findNetworkObjectPromise.TrySetResult(NetworkManager.SpawnManager.SpawnedObjects[networkObjectId]);
         }
         
         public IEnumerable<T> FindNetworkSystem<T>() where T : NetworkBehaviour, INetworkSystem<T>

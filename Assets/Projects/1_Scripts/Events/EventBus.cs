@@ -107,7 +107,7 @@ namespace PokaiLand.Events
             }
         }
 
-        public static void Deregister<T>(Action<T> listener)
+        public static void Unregister<T>(Action<T> listener)
         {
             lock (_lock)
             {

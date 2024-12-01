@@ -45,14 +45,20 @@ namespace PokaiLand.Player
 
         private void OnEnable()
         {
+            if (IsOwner)
+                EventBus.Register<ClientEnterDoorEvent>(OnEnterDoor);
+            
             _playerControls.Enable();
             _playerControls.Player.Jump.performed += OnJump;
         }
 
         private void OnDisable()
         {
-            _playerControls.Disable();
+            if (IsOwner)
+                EventBus.Unregister<ClientEnterDoorEvent>(OnEnterDoor);
+            
             _playerControls.Player.Jump.performed -= OnJump;
+            _playerControls.Disable();
         }
 
         private void FixedUpdate()
@@ -109,6 +115,15 @@ namespace PokaiLand.Player
             return overlapCollider && !overlapCollider.isTrigger && overlapCollider.gameObject != gameObject;
         }
 
+        private void OnEnterDoor(ClientEnterDoorEvent e)
+        {
+            if (e.ClientId != OwnerClientId) return;
+            
+            if (e.IsEnterDoor)
+                _playerControls.Disable();
+            else
+                _playerControls.Enable();
+        }
 
         private void OnDrawGizmos()
         {

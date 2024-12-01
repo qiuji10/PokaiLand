@@ -27,20 +27,32 @@ namespace PokaiLand.Player
                 spriteRenderer.color = playerColor.Value;
             }
 
+            if (IsOwner)
+            {
+                EventBus.Register<ClientEnterDoorEvent>(OnEnterDoor);    
+            }
+            
             playerName.OnValueChanged += OnPlayerNameChanged;
             playerColor.OnValueChanged += OnPlayerColorChanged;
             EventBus.Register<PlayerMovementEvent>(OnPlayerMovement);
             EventBus.Register<PlayerJumpEvent>(OnPlayerJump);
             EventBus.Register<PlayerLandedEvent>(OnPlayerLanded);
+            
         }
 
         public override void OnNetworkDespawn()
         {
+            if (IsOwner)
+            {
+                EventBus.Unregister<ClientEnterDoorEvent>(OnEnterDoor);
+            }
+            
             playerName.OnValueChanged += OnPlayerNameChanged;
             playerColor.OnValueChanged -= OnPlayerColorChanged;
-            EventBus.Deregister<PlayerMovementEvent>(OnPlayerMovement);
-            EventBus.Deregister<PlayerJumpEvent>(OnPlayerJump);
-            EventBus.Deregister<PlayerLandedEvent>(OnPlayerLanded);
+            EventBus.Unregister<PlayerMovementEvent>(OnPlayerMovement);
+            EventBus.Unregister<PlayerJumpEvent>(OnPlayerJump);
+            EventBus.Unregister<PlayerLandedEvent>(OnPlayerLanded);
+
         }
 
         private void OnPlayerMovement(PlayerMovementEvent e)
@@ -68,7 +80,25 @@ namespace PokaiLand.Player
         {
             _isGrounded = true;
         }
+        
+        private void OnEnterDoor(ClientEnterDoorEvent e)
+        {
+            ServerOnClientEnterDoorRpc(e);
+        }
 
+        [Rpc(SendTo.Server, DeferLocal = true)]
+        private void ServerOnClientEnterDoorRpc(ClientEnterDoorEvent e)
+        {
+            ClientOnEnterDoorRpc(e);
+        }
+
+        [Rpc(SendTo.ClientsAndHost, DeferLocal = true)]
+        private void ClientOnEnterDoorRpc(ClientEnterDoorEvent e)
+        {
+            if (e.ClientId == OwnerClientId)
+                spriteRenderer.enabled = !e.IsEnterDoor;
+        }
+        
         private void OnPlayerNameChanged(FixedString32Bytes previousValue, FixedString32Bytes newValue)
         {
             gameObject.name = newValue.Value;

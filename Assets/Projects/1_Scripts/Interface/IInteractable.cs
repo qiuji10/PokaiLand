@@ -15,13 +15,18 @@ namespace PokaiLand
         void Interact(InteractInfo info);
     }
 
-    public struct InteractInfo
+    public struct InteractInfo : INetworkSerializable
     {
-        public readonly ulong ClientId;
+        public ulong ClientId;
 
         public InteractInfo(ulong clientId)
         {
             this.ClientId = clientId;
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref ClientId);
         }
     }
 }
