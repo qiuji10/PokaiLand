@@ -18,7 +18,6 @@ namespace PokaiLand.Infrastructure
         private readonly IEnumerable<EAddressableLabels> _addressableLabels = System.Enum.GetValues(typeof(EAddressableLabels)).Cast<EAddressableLabels>();
         private readonly ConcurrentDictionary<Type, object> _systemCache = new ConcurrentDictionary<Type, object>();
         private readonly Dictionary<EAddressableLabels, ulong> _systemNetworkId = new Dictionary<EAddressableLabels, ulong>();
-
         
         private async UniTask<T> CreateSystem<T>(EAddressableLabels labels, params object[] args) where T : MonoBehaviour, ISystem<T>
         {

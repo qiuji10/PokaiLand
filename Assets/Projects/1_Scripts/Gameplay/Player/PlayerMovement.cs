@@ -20,21 +20,13 @@ namespace PokaiLand.Player
         [SerializeField] private Vector2 groundCheckBoxSize = new Vector2(1f,  0.1f);
 
         private bool _prevIsGrounded;
+        private float _lastReportedVelocityX;
+        private int _layer;
         private Rigidbody2D _rb;
         private InputAction _moveAction;
         private PlayerControls _playerControls;
-        private float _lastReportedVelocityX;
 
         private Vector2 MovementInput => _moveAction.ReadValue<Vector2>();
-
-        public override void OnNetworkSpawn()
-        {
-            if (!IsOwner)
-            {
-                // To make other player as jump-able ground 
-                gameObject.layer = LayerMask.NameToLayer("Ground") != -1 ? LayerMask.NameToLayer("Ground") : 0;
-            }
-        }
 
         private void Awake()
         {
@@ -42,23 +34,29 @@ namespace PokaiLand.Player
             _playerControls = new PlayerControls();
             _moveAction = _playerControls.Player.Move;
         }
-
-        private void OnEnable()
+        
+        public override void OnNetworkSpawn()
         {
-            if (IsOwner)
-                EventBus.Register<ClientEnterDoorEvent>(OnEnterDoor);
+            // To make other player as jump-able ground
+            _layer = LayerMask.NameToLayer(IsOwner ? "Player" : "Ground");
+            gameObject.layer = _layer != -1 ? _layer : 0;
             
-            _playerControls.Enable();
-            _playerControls.Player.Jump.performed += OnJump;
+            if (IsOwner)
+            {
+                EventBus.Register<ClientEnterDoorEvent>(OnInteractDoor);
+                _playerControls.Enable();
+                _playerControls.Player.Jump.performed += OnJump;
+            }
         }
-
-        private void OnDisable()
+        
+        public override void OnNetworkDespawn()
         {
             if (IsOwner)
-                EventBus.Unregister<ClientEnterDoorEvent>(OnEnterDoor);
-            
-            _playerControls.Player.Jump.performed -= OnJump;
-            _playerControls.Disable();
+            {
+                EventBus.Unregister<ClientEnterDoorEvent>(OnInteractDoor);
+                _playerControls.Player.Jump.performed -= OnJump;
+                _playerControls.Disable();
+            }
         }
 
         private void FixedUpdate()
@@ -115,14 +113,32 @@ namespace PokaiLand.Player
             return overlapCollider && !overlapCollider.isTrigger && overlapCollider.gameObject != gameObject;
         }
 
-        private void OnEnterDoor(ClientEnterDoorEvent e)
+        private void OnInteractDoor(ClientEnterDoorEvent e)
         {
             if (e.ClientId != OwnerClientId) return;
-            
+
             if (e.IsEnterDoor)
-                _playerControls.Disable();
+            {
+                _playerControls.Player.Disable();
+            }
             else
-                _playerControls.Enable();
+            {
+                _playerControls.Player.Enable();
+            }
+
+            ServerSetPlayerToInvisibleLayerRpc(e.IsEnterDoor);
+        }
+
+        [Rpc(SendTo.Server, DeferLocal = true)]
+        private void ServerSetPlayerToInvisibleLayerRpc(bool isInvisible)
+        {
+            ClientSetPlayerToInvisibleLayerRpc(isInvisible);
+        }
+
+        [Rpc(SendTo.ClientsAndHost, DeferLocal = true)]
+        private void ClientSetPlayerToInvisibleLayerRpc(bool isInvisible)
+        {
+            gameObject.layer = isInvisible ? LayerMask.NameToLayer("Invisible") : _layer;
         }
 
         private void OnDrawGizmos()

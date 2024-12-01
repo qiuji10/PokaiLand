@@ -21,7 +21,12 @@ namespace PokaiLand.Item
         public InputAction InputAction => new PlayerControls().Player.Interact;
         
         private readonly NetworkVariable<bool> _isOpen = new();
-        private readonly NetworkList<ulong> _enteredClientIds = new(new List<ulong>());
+        private NetworkList<ulong> _enteredClientIds;
+
+        private void Awake()
+        {
+            _enteredClientIds = new NetworkList<ulong>();
+        }
 
         public void OnEnable()
         {

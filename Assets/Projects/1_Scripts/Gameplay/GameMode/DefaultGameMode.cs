@@ -12,8 +12,8 @@ namespace PokaiLand.Gameplay.GameMode.V2
 {
     public class DefaultGameMode : BaseGameMode, INetworkSystem<DefaultGameMode>, IDisposable
     {
-        private readonly NetworkList<FixedString32Bytes> _playerNames = new();
         private readonly List<Color> _registeredColors = new();
+        private NetworkList<FixedString32Bytes> _playerNames;
         private int _playerCompleteCount;
         
         private readonly Color[] _colorIndexes = new[]
@@ -27,6 +27,10 @@ namespace PokaiLand.Gameplay.GameMode.V2
         public override bool InitializedOnClientSide => false;
         public override bool CanStartGame() => true;
 
+        private void Awake()
+        {
+            _playerNames = new NetworkList<FixedString32Bytes>();
+        }
 
         public UniTask<DefaultGameMode> Init(params object[] args)
         {
