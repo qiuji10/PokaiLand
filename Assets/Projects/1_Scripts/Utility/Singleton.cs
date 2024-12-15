@@ -18,7 +18,7 @@ namespace PokaiLand.Utility
             set => _instance = value;
         }
 
-        private bool PreventDestroyOnLoad => true;
+        protected virtual bool PreventDestroyOnLoad => true;
 
         private void Awake()
         {

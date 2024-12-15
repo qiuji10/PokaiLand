@@ -15,12 +15,27 @@ MonoBehaviour:
   m_GroupName: Gameplay Element Group
   m_GUID: a675dca9715010a4e9fe0c12f5f1be76
   m_SerializeEntries:
+  - m_GUID: 292c8fe5469db184aa56b96d5454ef0f
+    m_Address: PF_Reset Zone
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Map
+    - ResetZone
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 2eaec7b664cdf954d93f83068281c475
     m_Address: PF_Interactive_Key
     m_ReadOnly: 0
     m_SerializedLabels:
     - Interactive
     - Key
+    - Map
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 61ded0a8719ccad46bbd585c9ffeeb2c
+    m_Address: PF_Block
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Block
+    - Map
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6707dca434c20b24e8a43b257eb85988
     m_Address: PF_Interactive_Door
@@ -28,6 +43,7 @@ MonoBehaviour:
     m_SerializedLabels:
     - Door
     - Interactive
+    - Map
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 6197031f1ead15c4ebcff04cc189bfdc, type: 2}

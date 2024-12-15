@@ -29,6 +29,13 @@ MonoBehaviour:
     - Map
     - System
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9011f5aa6047fb84a8be4683a22a5d25
+    m_Address: PF_System_PlayerSystem
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Player
+    - System
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a08c512b387dabc42bb94ed177e2d2d6
     m_Address: PF_System_Camera
     m_ReadOnly: 0

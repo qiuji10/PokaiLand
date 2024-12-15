@@ -15,6 +15,13 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: b0d375402160f45449e6d956d063dbe8
   m_SerializeEntries:
+  - m_GUID: 38de884050c43ab4ebe4c28c0a27c714
+    m_Address: PF_Player
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Map
+    - Player
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a15e3f1545232374783ab79920c223f1
     m_Address: PF_Env_Base
     m_ReadOnly: 0

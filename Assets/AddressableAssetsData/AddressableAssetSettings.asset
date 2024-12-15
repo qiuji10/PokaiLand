@@ -113,6 +113,9 @@ MonoBehaviour:
     - Key
     - Door
     - Map
+    - Block
+    - ResetZone
+    - Player
   m_SchemaTemplates: []
   m_GroupTemplateObjects:
   - {fileID: 11400000, guid: 7d840605fec2f544bbd3c596e9e908a3, type: 2}

@@ -38,7 +38,7 @@ namespace PokaiLand.Player
         public override void OnNetworkSpawn()
         {
             // To make other player as jump-able ground
-            _layer = LayerMask.NameToLayer(IsOwner ? "Player" : "Ground");
+            _layer = LayerMask.NameToLayer(IsOwner ? "Player" : "Default");
             gameObject.layer = _layer != -1 ? _layer : 0;
             
             if (IsOwner)
@@ -110,7 +110,7 @@ namespace PokaiLand.Player
                 groundLayer
             );
 
-            return overlapCollider && !overlapCollider.isTrigger && overlapCollider.gameObject != gameObject;
+            return overlapCollider && overlapCollider.gameObject != gameObject;
         }
 
         private void OnInteractDoor(ClientEnterDoorEvent e)

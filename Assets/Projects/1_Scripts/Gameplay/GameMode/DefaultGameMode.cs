@@ -24,7 +24,7 @@ namespace PokaiLand.Gameplay.GameMode.V2
             Color.yellow,
         };
         
-        public override bool InitializedOnClientSide => false;
+        public override bool InitializedOnClientSide => true;
         public override bool CanStartGame() => true;
 
         private void Awake()
@@ -34,7 +34,12 @@ namespace PokaiLand.Gameplay.GameMode.V2
 
         public UniTask<DefaultGameMode> Init(params object[] args)
         {
-            ServerStartGame();
+            if (IsClient)
+                ServerOnClientGameModeSpawnRpc(NetworkManager.LocalClientId);
+
+            if (IsServer)
+                ServerStartGame();
+            
             return UniTask.FromResult(this);
         }
         
@@ -50,25 +55,19 @@ namespace PokaiLand.Gameplay.GameMode.V2
 
         public override void OnNetworkSpawn()
         {
-            base.OnNetworkSpawn();
-            
             if (IsServer)
                 EventBus.Register<ServerEnterDoorEvent>(OnEnterDoorEvent);
         }
 
         public override void OnNetworkDespawn()
         {
-            base.OnNetworkDespawn();
-            
             if (IsServer)
                 EventBus.Unregister<ServerEnterDoorEvent>(OnEnterDoorEvent);
         }
         
         [Rpc(SendTo.Server, DeferLocal = true)]
-        protected override void ServerOnClientGameModeSpawnRpc(ulong clientId)
+        protected void ServerOnClientGameModeSpawnRpc(ulong clientId)
         {
-            base.ServerOnClientGameModeSpawnRpc(clientId);
-            
             _playerNames.Add($"Player {clientId}");
             UpdatePlayerColor(clientId, FindClientIndex(clientId));
         }
@@ -102,6 +101,9 @@ namespace PokaiLand.Gameplay.GameMode.V2
         private void UpdatePlayerColor(ulong clientId, int playerIndex)
         {
             var clientNetworkObject = NetworkManager.SpawnManager.GetPlayerNetworkObject(clientId);
+            
+            Debug.Log($"on player spawn {NetworkManager.LocalClientId} {clientId} {clientNetworkObject}");
+            
             var playerDeco = clientNetworkObject?.GetComponent<PlayerDecorator>();
             if (playerDeco != null)
             {

@@ -2,10 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using NUnit.Framework;
-using PokaiLand;
 using PokaiLand.Extensions;
 using PokaiLand.Utility;
 using Unity.Netcode;
@@ -35,43 +31,59 @@ namespace PokaiLand.Gameplay.Map
 
             for (int i = 0; i < mapData.mapObjects.Length; i++)
             {
-                var mapObject = await SystemUtility.CreateFromAsset<GameObject>(mapData.mapObjects[i].labels);
-                mapObject.transform.Set(mapData.mapObjects[i].transform);
+                var mapObjectData = mapData.mapObjects[i];
+                var mapObject = await SystemUtility.CreateFromAsset<GameObject>(mapObjectData.labels);
+                
                 mapObject.SpawnOnNetwork();
+                mapObject.transform.Set(mapObjectData.transform);
+
+                switch (mapObjectData)
+                {
+                    case ResetZoneMapObjectData resetZone:
+                        if (mapObject.TryGetComponent<ResetZone>(out var zoneComponent))
+                        {
+                            zoneComponent.DefineResetPosition(resetZone.spawnPoint);
+                        }
+                        break;
+                    // Add more cases here for other specific MapObject types
+                }
+
+
             }
 
             return this;
         }
+        
+        #if UNITY_EDITOR
 
-        private void Update()
+        [SerializeField] MapDataSO mapDataSO;
+        
+        public void SaveMapData()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.Space))
-            {
-                SaveMapData();
-            }
-        }
-
-        private void SaveMapData()
-        {
-            IInteractable[] interactables = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
-                .OfType<IInteractable>()
+            IMapObject[] worldObjects = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .OfType<IMapObject>()
                 .ToArray();
 
-            List<MapObject> mapObjects = new List<MapObject>();
+            List<MapObjectData> mapObjects = new List<MapObjectData>();
             
-            for (int i = 0; i < interactables.Length; i++)
+            for (int i = 0; i < worldObjects.Length; i++)
             {
-                mapObjects.Add(new MapObject
-                {
-                    labels = interactables[i].Labels,
-                    transform = new Transform2D(interactables[i].gameObject.transform)
-                });
+                mapObjects.Add(CreateMapObject(worldObjects[i]));
             }
 
             MapData mapData = new MapData
             {
                 mapObjects = mapObjects.ToArray()
             };
+            
+            mapDataSO.mapData = mapData;
         }
+
+        private MapObjectData CreateMapObject(IMapObject obj) => obj switch
+        {
+            ResetZone zone => new ResetZoneMapObjectData(zone.Labels, new Transform2D(zone.transform), zone.ResetPoint),
+            _ => new MapObjectData(obj.Labels, new Transform2D(obj.gameObject.transform))
+        };
+        #endif
     }
 }

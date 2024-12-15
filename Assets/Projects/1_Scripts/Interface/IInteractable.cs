@@ -5,11 +5,8 @@ using UnityEngine.InputSystem;
 
 namespace PokaiLand
 {
-    public interface IInteractable
+    public interface IInteractable : IMapObject
     {
-        GameObject gameObject { get; }
-        NetworkObject NetworkObject { get; }
-        EAddressableLabels Labels { get; }
         EInteractable Type { get; }
         InputAction InputAction { get; }
         void Interact(InteractInfo info);

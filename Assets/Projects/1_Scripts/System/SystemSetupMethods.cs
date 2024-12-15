@@ -66,6 +66,7 @@ namespace PokaiLand.Infrastructure
             {
                 GameObject prefab = await SystemUtility.FindAssetByLabels<GameObject>(array);
                 var networkObject = prefab.GetComponent<NetworkObject>().InstantiateAndSpawn(NetworkManager);
+                networkObject.gameObject.name = prefab.name;
 
                 if (networkObject.TryGetComponent(out T component))
                 {
@@ -96,8 +97,6 @@ namespace PokaiLand.Infrastructure
 
             throw new Exception($"Server or client connection not initiated");
         }
-
-        
 
         [Rpc(SendTo.Server, DeferLocal = true)]
         private void ServerSendClientNetworkObjectIdRpc(ulong senderClientId, EAddressableLabels labels)

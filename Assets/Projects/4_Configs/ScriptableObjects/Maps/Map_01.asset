@@ -14,13 +14,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapData:
     mapObjects:
-    - labels: 48
-      transform:
-        position: {x: -3.5, y: -3.5}
-        size: {x: 1, y: 1}
-        rotation: 0
-    - labels: 20
-      transform:
-        position: {x: 3.5, y: -3.5}
-        size: {x: 1, y: 1}
-        rotation: 0
+    - rid: 7700169446126256813
+    - rid: 7700169446126256814
+    - rid: 7700169446126256815
+    - rid: 7700169446126256848
+  references:
+    version: 2
+    RefIds:
+    - rid: 7700169446126256813
+      type: {class: MapObjectData, ns: PokaiLand.Gameplay.Map, asm: Assembly-CSharp}
+      data:
+        labels: 20
+        transform:
+          position: {x: -3.5, y: -3.5}
+          size: {x: 1, y: 1}
+          rotation: 0
+    - rid: 7700169446126256814
+      type: {class: MapObjectData, ns: PokaiLand.Gameplay.Map, asm: Assembly-CSharp}
+      data:
+        labels: 268435460
+        transform:
+          position: {x: 3.5, y: -3.5}
+          size: {x: 1, y: 1}
+          rotation: 0
+    - rid: 7700169446126256815
+      type: {class: MapObjectData, ns: PokaiLand.Gameplay.Map, asm: Assembly-CSharp}
+      data:
+        labels: 36864
+        transform:
+          position: {x: 0, y: -4.5}
+          size: {x: 8, y: 1}
+          rotation: 0
+    - rid: 7700169446126256848
+      type: {class: ResetZoneMapObjectData, ns: PokaiLand.Gameplay.Map, asm: Assembly-CSharp}
+      data:
+        labels: 33024
+        transform:
+          position: {x: 0, y: -7}
+          size: {x: 30, y: 1}
+          rotation: 0
+        spawnPoint: {x: 0, y: 8}
