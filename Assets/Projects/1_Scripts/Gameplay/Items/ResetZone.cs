@@ -1,10 +1,11 @@
 using System;
 using PokaiLand;
 using PokaiLand.Enum;
+using PokaiLand.Gameplay.Map;
 using Unity.Netcode;
 using UnityEngine;
 
-public class ResetZone : NetworkBehaviour, IMapObject
+public class ResetZone : NetworkBehaviour, IMapObject, IPostProcessMapObjectData<ResetZoneMapObjectData>
 {
     [SerializeField] private Transform resetPoint;
     private readonly NetworkVariable<Vector2> _resetPosition = new NetworkVariable<Vector2>();
@@ -28,12 +29,20 @@ public class ResetZone : NetworkBehaviour, IMapObject
     
     public void DefineResetPosition(Vector2 position)
     {
-        _resetPosition.Value = position;
+        if (Application.isPlaying)
+            _resetPosition.Value = position;
+        else
+            resetPoint.position = position;    
     }
     
     private void UpdateResetPosition(Vector2 prevPosition, Vector2 newPosition)
     {
         resetPoint.position = newPosition;
+    }
+    
+    public void HandlePostProcessMapObjectData(ResetZoneMapObjectData data)
+    {
+        DefineResetPosition(data.spawnPoint);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

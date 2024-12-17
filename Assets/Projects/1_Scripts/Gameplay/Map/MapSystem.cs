@@ -11,6 +11,9 @@ namespace PokaiLand.Gameplay.Map
 {
     public class MapSystem : NetworkBehaviour, INetworkSystem<MapSystem>
     {
+        [SerializeField] MapDataSO mapDataConfig;
+        
+        public MapDataSO MapDataConfig => mapDataConfig;
         public bool InitializedOnClientSide => false;
         
         public async UniTask<MapSystem> Init(params object[] args)
@@ -21,7 +24,7 @@ namespace PokaiLand.Gameplay.Map
             
             if (args[0] is string mapDataId)
             {
-                MapDataSO mapDataConfig = await SystemUtility.FindAssetByName<MapDataSO>(mapDataId);
+                mapDataConfig = await SystemUtility.FindAssetByName<MapDataSO>(mapDataId);
                 mapData = mapDataConfig.mapData;
             }
             else if (args[0] is MapData data)
@@ -29,34 +32,22 @@ namespace PokaiLand.Gameplay.Map
                 mapData = data;
             }
 
+            LoadMapData(mapData);
+
+            return this;
+        }
+
+        private async void LoadMapData(MapData mapData)
+        {
             for (int i = 0; i < mapData.mapObjects.Length; i++)
             {
                 var mapObjectData = mapData.mapObjects[i];
                 var mapObject = await SystemUtility.CreateFromAsset<GameObject>(mapObjectData.labels);
                 
                 mapObject.SpawnOnNetwork();
-                mapObject.transform.Set(mapObjectData.transform);
-
-                switch (mapObjectData)
-                {
-                    case ResetZoneMapObjectData resetZone:
-                        if (mapObject.TryGetComponent<ResetZone>(out var zoneComponent))
-                        {
-                            zoneComponent.DefineResetPosition(resetZone.spawnPoint);
-                        }
-                        break;
-                    // Add more cases here for other specific MapObject types
-                }
-
-
+                MapObjectProcessor.PostProcessMapObjectCreation(mapObject, mapObjectData);
             }
-
-            return this;
         }
-        
-        #if UNITY_EDITOR
-
-        [SerializeField] MapDataSO mapDataSO;
         
         public void SaveMapData()
         {
@@ -76,7 +67,7 @@ namespace PokaiLand.Gameplay.Map
                 mapObjects = mapObjects.ToArray()
             };
             
-            mapDataSO.mapData = mapData;
+            mapDataConfig.mapData = mapData;
         }
 
         private MapObjectData CreateMapObject(IMapObject obj) => obj switch
@@ -84,6 +75,5 @@ namespace PokaiLand.Gameplay.Map
             ResetZone zone => new ResetZoneMapObjectData(zone.Labels, new Transform2D(zone.transform), zone.ResetPoint),
             _ => new MapObjectData(obj.Labels, new Transform2D(obj.gameObject.transform))
         };
-        #endif
     }
 }

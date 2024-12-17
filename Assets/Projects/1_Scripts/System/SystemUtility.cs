@@ -6,6 +6,11 @@ using PokaiLand.Enum;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.AddressableAssets;
+#endif
+
 namespace PokaiLand.Utility
 {
     public static class SystemUtility
@@ -30,7 +35,7 @@ namespace PokaiLand.Utility
             return component;
         }
         
-        public static async UniTask<T> FindAsset<T>(EAddressableLabels labels)
+        public static async UniTask<T> FindAssetByLabels<T>(EAddressableLabels labels)
         {
             var array = AddressableLabels
                 .Where(l => labels.HasFlag(l))
@@ -68,5 +73,45 @@ namespace PokaiLand.Utility
             
             return await CreateFromAsset<T>(array);
         }
+        
+        #if UNITY_EDITOR
+        public static GameObject EditorFindPrefabByLabels(EAddressableLabels labels)
+        {
+            var settings = AddressableAssetSettingsDefaultObject.Settings;
+            if (!settings)
+                throw new InvalidOperationException("Addressable Asset Settings not found!");
+
+            // Convert enum flags to string array
+            var labelStrings = System.Enum.GetValues(typeof(EAddressableLabels))
+                .Cast<EAddressableLabels>()
+                .Where(l => labels.HasFlag(l))
+                .Select(l => l.ToString())
+                .ToArray();
+
+            if (labelStrings.Length == 0)
+                throw new ArgumentException("No labels selected!", nameof(labels));
+
+            // Find entries with ALL specified labels
+            var entries = settings.groups
+                .SelectMany(g => g.entries)
+                .Where(e => labelStrings.All(label => e.labels.Contains(label)))
+                .ToList();
+
+            if (entries.Count == 0)
+                throw new InvalidOperationException($"No prefab found with labels: {string.Join(", ", labelStrings)}");
+
+            if (entries.Count > 1)
+                throw new InvalidOperationException($"Multiple prefabs found with labels: {string.Join(", ", labelStrings)}");
+
+            var entry = entries[0];
+            string assetPath = AssetDatabase.GUIDToAssetPath(entry.guid);
+            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+    
+            if (!asset)
+                throw new InvalidOperationException($"Failed to load prefab at path: {assetPath}");
+
+            return asset;
+        }
+        #endif
     }
 }
