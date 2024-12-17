@@ -65,6 +65,7 @@ namespace PokaiLand.Player
 
         private void OnPlayerInteractAttempt(InputAction.CallbackContext ctx)
         {
+            // find key and door, open the door, enter the door
             if (_interactableHandler.CurrentTarget != null)
             {
                 bool inDoorRange = _interactableHandler.CurrentTarget is { Type: EInteractable.Door };
@@ -80,12 +81,15 @@ namespace PokaiLand.Player
 
                 if (inDoorRange && ((Door)_interactableHandler.CurrentTarget).IsOpen)
                 {
+                    // on enter door, cache door reference,
+                    // because collision handler will not work after disable collider on interact door
                     _interactDoor = _interactableHandler.CurrentTarget;
                     _interactableHandler.CurrentTarget.Interact(new InteractInfo(OwnerClientId));
                     return;
                 }
             }
 
+            // exit the door
             if (_interactDoor != null)
             {
                 _interactDoor.Interact(new InteractInfo(OwnerClientId));
@@ -93,16 +97,21 @@ namespace PokaiLand.Player
                 return;
             }
             
+            // "return" statement above only applicable to 2 scenario -> door & pickable
+            // if there are more interaction in the future, need to rework on it
+            
             if (_currentHoldingPickable != null)
             {
+                // drop pickable
                 if (_currentHoldingPickable.CanDrop)
                 {
                     _currentHoldingPickable.OnDrop();
                     _currentHoldingPickable = null;
                 }
             }
-            else
+            else 
             {
+                // pickup pickable
                 if (_pickableHandler.CurrentTarget is { IsPickedUp: false })
                 {
                     _currentHoldingPickable = _pickableHandler.CurrentTarget;
