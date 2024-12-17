@@ -102,8 +102,6 @@ namespace PokaiLand.Gameplay.GameMode.V2
         {
             var clientNetworkObject = NetworkManager.SpawnManager.GetPlayerNetworkObject(clientId);
             
-            Debug.Log($"on player spawn {NetworkManager.LocalClientId} {clientId} {clientNetworkObject}");
-            
             var playerDeco = clientNetworkObject?.GetComponent<PlayerDecorator>();
             if (playerDeco != null)
             {

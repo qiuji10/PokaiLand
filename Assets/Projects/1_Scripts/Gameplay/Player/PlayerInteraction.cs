@@ -61,6 +61,8 @@ namespace PokaiLand.Player
             _playerControls.Disable();
         }
 
+        private IInteractable _interactDoor;
+
         private void OnPlayerInteractAttempt(InputAction.CallbackContext ctx)
         {
             if (_interactableHandler.CurrentTarget != null)
@@ -78,9 +80,17 @@ namespace PokaiLand.Player
 
                 if (inDoorRange && ((Door)_interactableHandler.CurrentTarget).IsOpen)
                 {
+                    _interactDoor = _interactableHandler.CurrentTarget;
                     _interactableHandler.CurrentTarget.Interact(new InteractInfo(OwnerClientId));
                     return;
                 }
+            }
+
+            if (_interactDoor != null)
+            {
+                _interactDoor.Interact(new InteractInfo(OwnerClientId));
+                _interactDoor = null;
+                return;
             }
             
             if (_currentHoldingPickable != null)

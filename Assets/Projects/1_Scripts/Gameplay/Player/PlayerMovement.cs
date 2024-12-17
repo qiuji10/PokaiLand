@@ -25,6 +25,7 @@ namespace PokaiLand.Player
         private Rigidbody2D _rb;
         private InputAction _moveAction;
         private PlayerControls _playerControls;
+        private Collider2D[] _colliders;
 
         private Vector2 MovementInput => _moveAction.ReadValue<Vector2>();
 
@@ -33,13 +34,13 @@ namespace PokaiLand.Player
             _rb = GetComponent<Rigidbody2D>();
             _playerControls = new PlayerControls();
             _moveAction = _playerControls.Player.Move;
+            _colliders = GetComponentsInChildren<Collider2D>();
         }
         
         public override void OnNetworkSpawn()
         {
             // To make other player as jump-able ground
-            _layer = LayerMask.NameToLayer(IsOwner ? "Player" : "Default");
-            gameObject.layer = _layer != -1 ? _layer : 0;
+            gameObject.layer = IsOwner ? Layers.Player : Layers.OtherPlayer;
             
             if (IsOwner)
             {
@@ -61,7 +62,7 @@ namespace PokaiLand.Player
 
         private void FixedUpdate()
         {
-            if (!IsOwner) return;
+            if (!IsOwner || _rb.bodyType == RigidbodyType2D.Static) return;
 
             bool isGrounded = IsGrounded();
             Vector2 velocity = _rb.linearVelocity;
@@ -110,7 +111,7 @@ namespace PokaiLand.Player
                 groundLayer
             );
 
-            return overlapCollider && overlapCollider.gameObject != gameObject;
+            return overlapCollider && !overlapCollider.isTrigger && overlapCollider.gameObject != gameObject;
         }
 
         private void OnInteractDoor(ClientEnterDoorEvent e)
@@ -138,7 +139,12 @@ namespace PokaiLand.Player
         [Rpc(SendTo.ClientsAndHost, DeferLocal = true)]
         private void ClientSetPlayerToInvisibleLayerRpc(bool isInvisible)
         {
-            gameObject.layer = isInvisible ? LayerMask.NameToLayer("Invisible") : _layer;
+            _rb.bodyType = isInvisible ? RigidbodyType2D.Static : RigidbodyType2D.Dynamic;
+
+            foreach (var collider2d in _colliders)
+            {
+                collider2d.enabled = !isInvisible;
+            }
         }
 
         private void OnDrawGizmos()

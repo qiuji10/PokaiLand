@@ -28,8 +28,6 @@ namespace PokaiLand.Player
         {
             GameObject player = await SystemUtility.CreateFromAsset<GameObject>(EAddressableLabels.Map | EAddressableLabels.Player);
             
-            Debug.Log($"set player owner to {clientId}");
-            
             var networkObject = player.GetComponent<NetworkObject>();
             networkObject.SpawnAsPlayerObject(clientId);
             
